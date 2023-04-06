@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include "COrgCtrl.h"
 
 class OrgTreeView : public CFormView
 {
@@ -21,6 +22,7 @@ protected: // create from serialization only
 	OrgTreeView() noexcept;
 	DECLARE_DYNCREATE(OrgTreeView)
 
+	COrgCtrl m_orgCtrl;
 public:
 #ifdef AFX_DESIGN_TIME
 	enum{ IDD = IDD_TREEVIEW_FORM };
@@ -56,9 +58,21 @@ protected:
 
 // Generated message map functions
 protected:
+
+	BOOL Create
+	( LPCTSTR lpszClassName
+		, LPCTSTR lpszWindowName
+		, DWORD dwRequestedStyle
+		, const RECT & rect
+		, CWnd * pParentWnd
+		, UINT nID
+		, CCreateContext * pContext
+	);
+
 	afx_msg void OnFilePrintPreview();
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+	afx_msg int OnCreate( LPCREATESTRUCT lpCreateStruct );
 	DECLARE_MESSAGE_MAP()
 };
 

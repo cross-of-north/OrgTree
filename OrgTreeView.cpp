@@ -141,5 +141,19 @@ OrgTreeDoc* OrgTreeView::GetDocument() const // non-debug version is inline
 }
 #endif //_DEBUG
 
+BOOL OrgTreeView::Create
+( LPCTSTR lpszClassName
+    , LPCTSTR lpszWindowName
+    , DWORD dwRequestedStyle
+    , const RECT & rect
+    , CWnd * pParentWnd
+    , UINT nID
+    , CCreateContext * pContext
+)
+{
+    BOOL bResult = CFormView::Create(lpszClassName, lpszWindowName, dwRequestedStyle, rect, pParentWnd, nID, pContext);
+	m_orgCtrl.Create( 0, CRect( 0, 0, 100, 100 ), this, 10000 );
+	return bResult;
+}
 
 // OrgTreeView message handlers
