@@ -35,10 +35,11 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
-	CDC cDC;
 	BOOL RegisterWndClass();
-	CPoint oldpt;
-	BOOL flag;
+	CPoint m_ptPrevDragPoint;
+	BOOL m_bDragging{ FALSE };
+	UINT_PTR m_nTimerID{ 0 };
+	BOOL m_bInvalidate{ FALSE };
 
 	float GetZoomRatio() const;
 	void SetZoomRatio( float fZoomRatio );
@@ -46,4 +47,6 @@ private:
 public:
 	afx_msg void OnPaint();
 	afx_msg BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
+	afx_msg void OnSize( UINT nType, int cx, int cy );
+	afx_msg void OnTimer( UINT_PTR nIDEvent );
 };

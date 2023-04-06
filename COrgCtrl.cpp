@@ -18,7 +18,7 @@ COrgCtrl::COrgCtrl()
   //Register My window class
   RegisterWndClass();
 
-  flag=FALSE;//Sets the drawing flag off
+  m_bDragging=FALSE;//Sets the drawing m_bDragging off
 }
 
 COrgCtrl::~COrgCtrl()
@@ -35,6 +35,8 @@ BEGIN_MESSAGE_MAP(COrgCtrl, CWnd)
   //}}AFX_MSG_MAP
     ON_WM_PAINT()
     ON_WM_MOUSEWHEEL()
+    ON_WM_SIZE()
+    ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -84,45 +86,11 @@ int COrgCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 }
 
 
-void COrgCtrl::OnLButtonDown(UINT nFlags, CPoint point) 
-{
-  // TODO: Add your message handler code here and/or call default
-
-  if(flag==FALSE)
-  {
-    oldpt=point;
-    flag=TRUE;
-  }
-  
-  //CWnd::OnLButtonDown(nFlags, point);
-}
-
-void COrgCtrl::OnMouseMove(UINT nFlags, CPoint point) 
-{
-  // TODO: Add your message handler code here and/or call default
-  
-  if(flag==TRUE)
-  {
-  
-    CDC *d=GetDC();
-
-    d->MoveTo(oldpt);
-    d->LineTo(point);
-  
-
-    oldpt=point;
-  
-    ReleaseDC(d);
-  }
-  
-  //CWnd::OnMouseMove(nFlags, point);
-}
-
 void COrgCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
 {
   // TODO: Add your message handler code here and/or call default
   
-  flag=FALSE;
+  m_bDragging=FALSE;
 
   //CWnd::OnLButtonUp(nFlags, point);
 }
@@ -135,12 +103,13 @@ public:
     float GetZoomRatio() const { return m_fZoomRatio; }
     void SetZoomRatio( float fZoomRatio ) { m_fZoomRatio = fZoomRatio; }
     const CRect & GetScreenRect() const { return m_rcScreenRect; }
+    CRect & GetScreenRect() { return m_rcScreenRect; }
     CRect ToViewRect( const CRect & rcRect ) const {
         CRect rcViewRect;
-        rcViewRect.left = LONG( float( rcRect.left ) * m_fZoomRatio );
-        rcViewRect.top = LONG( float( rcRect.top ) * m_fZoomRatio );
-        rcViewRect.right = LONG( float( rcRect.right ) * m_fZoomRatio );
-        rcViewRect.bottom = LONG( float( rcRect.bottom ) * m_fZoomRatio );
+        rcViewRect.left = m_rcScreenRect.left + LONG( float( rcRect.left ) * m_fZoomRatio );
+        rcViewRect.top = m_rcScreenRect.top + LONG( float( rcRect.top ) * m_fZoomRatio );
+        rcViewRect.right = m_rcScreenRect.left + LONG( float( rcRect.right ) * m_fZoomRatio );
+        rcViewRect.bottom = m_rcScreenRect.top + LONG( float( rcRect.bottom ) * m_fZoomRatio );
         return rcViewRect;
     }
 };
@@ -180,7 +149,7 @@ COrgCtrlView g_view{};
 
 void paint_node( CPaintDC & dc, const COrgCtrlDataItem::ptr_t & node ) {
     const CRect node_rect = g_view.ToViewRect( node->GetRect() );
-    ASSERT( node_rect.Height() > 0 && node_rect.Width() > 0);
+    ASSERT( !node_rect.IsRectEmpty() );
     for ( const auto & child : node->GetChildren() ) {
         const CRect child_rect = g_view.ToViewRect( child->GetRect() );
         dc.MoveTo( node_rect.left + node_rect.Width() / 2, node_rect.top + node_rect.Height() / 2 );
@@ -247,4 +216,46 @@ BOOL COrgCtrl::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt ) {
     }
 
     return CWnd::OnMouseWheel( nFlags, zDelta, pt );
+}
+
+void COrgCtrl::OnLButtonDown( UINT nFlags, CPoint point ) {
+    if ( m_bDragging == FALSE ) {
+        m_ptPrevDragPoint = point;
+        m_bDragging = TRUE;
+    }
+
+    CWnd::OnLButtonDown(nFlags, point);
+}
+
+void COrgCtrl::OnMouseMove( UINT nFlags, CPoint point ) {
+    if ( m_bDragging == TRUE ) {
+        CPoint delta = point - m_ptPrevDragPoint;
+        g_view.GetScreenRect().OffsetRect( delta );
+        m_ptPrevDragPoint = point;
+        m_bInvalidate = TRUE;
+        m_nTimerID = ::SetTimer( GetSafeHwnd(), m_nTimerID, 10, NULL );
+    }
+
+    CWnd::OnMouseMove(nFlags, point);
+}
+
+void COrgCtrl::OnSize( UINT nType, int cx, int cy ) {
+    CWnd::OnSize( nType, cx, cy );
+    CRect rcClient;
+    GetClientRect( rcClient );
+    CRect & rcView = g_view.GetScreenRect();
+    rcView.right = rcView.left + rcClient.Width();
+    rcView.bottom = rcView.top + rcClient.Height();
+}
+
+void COrgCtrl::OnTimer( UINT_PTR nIDEvent ) {
+    if ( m_nTimerID != 0 ) {
+        ::KillTimer( GetSafeHwnd(), m_nTimerID );
+        m_nTimerID = 0;
+    }
+    if ( m_bInvalidate ) {
+        Invalidate();
+        m_bInvalidate = FALSE;
+    }
+    CWnd::OnTimer( nIDEvent );
 }
