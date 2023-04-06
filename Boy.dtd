@@ -1,0 +1,4 @@
+<!ELEMENT Boy ((Wife? & Parents & Children*) | CDATA)>
+<!ELEMENT Wife - - CDATA>
+<!ELEMENT Parents - - CDATA>
+<!ELEMENT Children - - CDATA>
