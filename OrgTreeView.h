@@ -74,6 +74,8 @@ protected:
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	afx_msg int OnCreate( LPCREATESTRUCT lpCreateStruct );
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnSize( UINT nType, int cx, int cy );
 };
 
 #ifndef _DEBUG  // debug version in OrgTreeView.cpp

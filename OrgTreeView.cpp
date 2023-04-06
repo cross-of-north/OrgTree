@@ -39,6 +39,7 @@ BEGIN_MESSAGE_MAP(OrgTreeView, CFormView)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &OrgTreeView::OnFilePrintPreview)
 	ON_WM_CONTEXTMENU()
 	ON_WM_RBUTTONUP()
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 // OrgTreeView construction/destruction
@@ -157,3 +158,13 @@ BOOL OrgTreeView::Create
 }
 
 // OrgTreeView message handlers
+
+
+void OrgTreeView::OnSize( UINT nType, int cx, int cy ) {
+	CFormView::OnSize( nType, cx, cy );
+	if ( m_orgCtrl.GetSafeHwnd() != NULL ) {
+		CRect rect;
+		GetWindowRect( &rect );
+		m_orgCtrl.SetWindowPos( &m_orgCtrl, 0, 0, rect.right, rect.bottom, SWP_NOZORDER | SWP_SHOWWINDOW );
+	}
+}
