@@ -39,4 +39,6 @@ private:
 	BOOL RegisterWndClass();
 	CPoint oldpt;
 	BOOL flag;
+public:
+	afx_msg void OnPaint();
 };
