@@ -37,6 +37,7 @@ BEGIN_MESSAGE_MAP(COrgCtrl, CWnd)
     ON_WM_MOUSEWHEEL()
     ON_WM_SIZE()
     ON_WM_TIMER()
+    ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -137,7 +138,7 @@ private:
 COrgCtrlDataItem g_data{};
 COrgCtrlView g_view{};
 
-void paint_node( CPaintDC & dc, const COrgCtrlDataItem::ptr_t & node ) {
+void paint_node( CDC & dc, const COrgCtrlDataItem::ptr_t & node ) {
     const CRect node_rect = g_view.ToViewRect( node->GetRect() );
     ASSERT( !node_rect.IsRectEmpty() );
     for ( const auto & child : node->GetChildren() ) {
@@ -150,21 +151,38 @@ void paint_node( CPaintDC & dc, const COrgCtrlDataItem::ptr_t & node ) {
 }
 
 void COrgCtrl::OnPaint() {
-    CPaintDC dc( this );
+    
+    CRect rcClient;
+    GetClientRect( rcClient );
+    
+    CPaintDC paintDC( this );
+    
+    // double-buffered painting
+    CDC dc;
+    dc.CreateCompatibleDC( &paintDC );
+    CBitmap bitmap;
+    bitmap.CreateCompatibleBitmap( &paintDC, rcClient.Width(), rcClient.Height() );
+    HGDIOBJ oldBitmap = dc.SelectObject( bitmap );
+    
+    // do painting in memory DC
     HGDIOBJ oldBrush = dc.SelectObject( GetStockObject( DC_BRUSH ) );
     HGDIOBJ oldPen = dc.SelectObject( GetStockObject( DC_PEN ) );
     dc.SetDCBrushColor( RGB( 255, 255, 255 ) );
     dc.SetDCPenColor( RGB( 255, 255, 255 ) );
-    CRect rcClient;
-    GetClientRect( rcClient );
     dc.FillSolidRect( rcClient, RGB( 255, 255, 255 ) );
     dc.SetDCPenColor( RGB( 0, 0, 0 ) );
     auto it = g_data.GetChildren().begin();
     if ( it != g_data.GetChildren().end() ) {
         paint_node( dc, *it );
     }
+
+    // flush to screen
+    paintDC.BitBlt( 0, 0, rcClient.Width(), rcClient.Height(), &dc, 0, 0, SRCCOPY );
+    
+    // restore DC
     dc.SelectObject( oldPen );
     dc.SelectObject( oldBrush );
+    dc.SelectObject( oldBitmap );
 }
 
 BOOL COrgCtrl::Create( DWORD dwStyle, const RECT & rect, CWnd * pParentWnd, UINT nID ) {
@@ -196,7 +214,9 @@ void COrgCtrl::SetZoomRatio( float fZoomRatio ) {
 
 
 BOOL COrgCtrl::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt ) {
+    
     if ( ::GetKeyState( VK_CONTROL ) < 0 ) {
+        
         float fOldZoomRatio = GetZoomRatio();
         float fNewZoomRatio{ 0 };
         if ( zDelta > 0 ) {
@@ -220,6 +240,7 @@ BOOL COrgCtrl::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt ) {
 
         Invalidate();
     }
+
     return CWnd::OnMouseWheel( nFlags, zDelta, pt );
 }
 
@@ -261,4 +282,9 @@ void COrgCtrl::OnTimer( UINT_PTR nIDEvent ) {
         m_bInvalidate = FALSE;
     }
     CWnd::OnTimer( nIDEvent );
+}
+
+BOOL COrgCtrl::OnEraseBkgnd( CDC * pDC ) {
+    // avoid flickering
+    return TRUE;
 }
