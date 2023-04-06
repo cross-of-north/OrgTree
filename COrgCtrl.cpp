@@ -125,16 +125,6 @@ protected:
     CRect m_rcRect;
 public:
     COrgCtrlDataItem() = default;
-    /*
-    COrgCtrlDataItem( const COrgCtrlDataItem & source )
-        : m_children( source.m_children )
-    {
-    }
-    COrgCtrlDataItem & operator =( const COrgCtrlDataItem & source ) {
-        m_children = source.m_children;
-        return *this;
-    }
-    */
     const array_t & GetChildren() const { return m_children; }
     array_t & GetChildren() { return m_children; }
     const CRect & GetRect() const { return m_rcRect; }
@@ -207,14 +197,29 @@ void COrgCtrl::SetZoomRatio( float fZoomRatio ) {
 
 BOOL COrgCtrl::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt ) {
     if ( ::GetKeyState( VK_CONTROL ) < 0 ) {
+        float fOldZoomRatio = GetZoomRatio();
+        float fNewZoomRatio{ 0 };
         if ( zDelta > 0 ) {
-            SetZoomRatio( GetZoomRatio() * 1.1f );
+            fNewZoomRatio = fOldZoomRatio * 1.1f;
         } else {
-            SetZoomRatio( GetZoomRatio() * 0.9f );
+            fNewZoomRatio = fOldZoomRatio * 0.9f;
         }
+        SetZoomRatio( fNewZoomRatio );
+
+        // Adjust the view rect to keep the mouse cursor at the same position.
+        CPoint ptCursor;
+        ::GetCursorPos( &ptCursor );
+        ScreenToClient( &ptCursor );
+        CPoint ptCornerDistance = ptCursor - g_view.GetScreenRect().TopLeft();
+        CPoint ptNewCornerDistance = ptCornerDistance;
+        float fRateChange = fNewZoomRatio / fOldZoomRatio;
+        ptNewCornerDistance.x = LONG( float( ptNewCornerDistance.x ) * fRateChange );
+        ptNewCornerDistance.y = LONG( float( ptNewCornerDistance.y ) * fRateChange );
+        CPoint ptOffset = ptCornerDistance - ptNewCornerDistance;
+        g_view.GetScreenRect().OffsetRect( ptOffset );
+
         Invalidate();
     }
-
     return CWnd::OnMouseWheel( nFlags, zDelta, pt );
 }
 
@@ -223,7 +228,6 @@ void COrgCtrl::OnLButtonDown( UINT nFlags, CPoint point ) {
         m_ptPrevDragPoint = point;
         m_bDragging = TRUE;
     }
-
     CWnd::OnLButtonDown(nFlags, point);
 }
 
@@ -235,7 +239,6 @@ void COrgCtrl::OnMouseMove( UINT nFlags, CPoint point ) {
         m_bInvalidate = TRUE;
         m_nTimerID = ::SetTimer( GetSafeHwnd(), m_nTimerID, 10, NULL );
     }
-
     CWnd::OnMouseMove(nFlags, point);
 }
 
