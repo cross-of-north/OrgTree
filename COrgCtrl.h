@@ -1,5 +1,7 @@
 #pragma once
 
+#include "COrgCtrlData.h"
+
 #define ORGCTRLWNDCLASS _T("OrgCtrl")
 
 class COrgCtrl: public CWnd
@@ -36,10 +38,12 @@ protected:
 	DECLARE_MESSAGE_MAP()
 private:
 	BOOL RegisterWndClass();
+
 	CPoint m_ptPrevDragPoint;
 	BOOL m_bDragging{ FALSE };
 	UINT_PTR m_nTimerID{ 0 };
 	BOOL m_bInvalidate{ FALSE };
+	COrgCtrlData::ptr_t m_data;
 
 	float GetZoomRatio() const;
 	void SetZoomRatio( float fZoomRatio );
@@ -50,4 +54,6 @@ public:
 	afx_msg void OnSize( UINT nType, int cx, int cy );
 	afx_msg void OnTimer( UINT_PTR nIDEvent );
 	afx_msg BOOL OnEraseBkgnd( CDC * pDC );
+
+	void SetData( const COrgCtrlData::ptr_t data );
 };

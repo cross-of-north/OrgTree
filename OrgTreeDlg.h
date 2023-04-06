@@ -1,3 +1,4 @@
+#error not used
 #pragma once
 #include "afxdialogex.h"
 

@@ -46,9 +46,21 @@ END_MESSAGE_MAP()
 
 OrgTreeView::OrgTreeView() noexcept
 	: CFormView(IDD_TREEVIEW_FORM)
+	, m_data( std::make_shared< COrgCtrlData >() )
 {
-	// TODO: add construction code here
+	COrgCtrlDataItem::ptr_t pRoot = std::make_shared< COrgCtrlDataItem >();
+	pRoot->GetRect() = { 50, 50, 70, 60 };
+	COrgCtrlDataItem::ptr_t node1 = std::make_shared< COrgCtrlDataItem >();
+	node1->GetRect() = { 80, 20, 100, 30 };
+	COrgCtrlDataItem::ptr_t node2 = std::make_shared< COrgCtrlDataItem >();
+	node2->GetRect() = { 80, 40, 100, 50 };
+	COrgCtrlDataItem::ptr_t node3 = std::make_shared< COrgCtrlDataItem >();
+	node3->GetRect() = { 80, 60, 100, 70 };
+	pRoot->GetChildren().push_back( node1 );
+	pRoot->GetChildren().push_back( node2 );
+	pRoot->GetChildren().push_back( node3 );
 
+	m_data->GetRoot().GetChildren().push_back( pRoot );
 }
 
 OrgTreeView::~OrgTreeView()
@@ -142,17 +154,10 @@ OrgTreeDoc* OrgTreeView::GetDocument() const // non-debug version is inline
 }
 #endif //_DEBUG
 
-BOOL OrgTreeView::Create
-( LPCTSTR lpszClassName
-    , LPCTSTR lpszWindowName
-    , DWORD dwRequestedStyle
-    , const RECT & rect
-    , CWnd * pParentWnd
-    , UINT nID
-    , CCreateContext * pContext
-)
+BOOL OrgTreeView::Create( LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwRequestedStyle, const RECT & rect, CWnd * pParentWnd, UINT nID, CCreateContext * pContext )
 {
     BOOL bResult = CFormView::Create(lpszClassName, lpszWindowName, dwRequestedStyle, rect, pParentWnd, nID, pContext);
+	m_orgCtrl.SetData( m_data );
 	m_orgCtrl.Create( 0, CRect( 0, 0, 100, 100 ), this, 10000 );
 	return bResult;
 }

@@ -39,13 +39,13 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OrgTreeDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OrgTreeApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="COrgCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="COrgCtrlData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,13 +65,13 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OrgTreeDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="OrgTreeApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="COrgCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="COrgCtrlData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

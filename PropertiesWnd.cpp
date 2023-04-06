@@ -15,7 +15,6 @@
 #include "PropertiesWnd.h"
 #include "Resource.h"
 #include "MainFrm.h"
-#include "OrgTreeDlg.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE

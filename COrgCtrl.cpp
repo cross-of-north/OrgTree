@@ -115,27 +115,6 @@ public:
     }
 };
 
-class COrgCtrlDataItem;
-
-class COrgCtrlDataItem {
-public:
-    typedef std::shared_ptr < COrgCtrlDataItem > ptr_t;
-    typedef std::vector< ptr_t > array_t;
-protected:
-    array_t m_children;
-    CRect m_rcRect;
-public:
-    COrgCtrlDataItem() = default;
-    const array_t & GetChildren() const { return m_children; }
-    array_t & GetChildren() { return m_children; }
-    const CRect & GetRect() const { return m_rcRect; }
-    CRect & GetRect() { return m_rcRect; }
-private:
-    COrgCtrlDataItem( const COrgCtrlDataItem & source ) = delete;
-    COrgCtrlDataItem & operator =( const COrgCtrlDataItem & source ) = delete;
-};
-
-COrgCtrlDataItem g_data{};
 COrgCtrlView g_view{};
 
 void paint_node( CDC & dc, const COrgCtrlDataItem::ptr_t & node ) {
@@ -151,19 +130,19 @@ void paint_node( CDC & dc, const COrgCtrlDataItem::ptr_t & node ) {
 }
 
 void COrgCtrl::OnPaint() {
-    
+
     CRect rcClient;
     GetClientRect( rcClient );
-    
+
     CPaintDC paintDC( this );
-    
+
     // double-buffered painting
     CDC dc;
     dc.CreateCompatibleDC( &paintDC );
     CBitmap bitmap;
     bitmap.CreateCompatibleBitmap( &paintDC, rcClient.Width(), rcClient.Height() );
     HGDIOBJ oldBitmap = dc.SelectObject( bitmap );
-    
+
     // do painting in memory DC
     HGDIOBJ oldBrush = dc.SelectObject( GetStockObject( DC_BRUSH ) );
     HGDIOBJ oldPen = dc.SelectObject( GetStockObject( DC_PEN ) );
@@ -171,9 +150,12 @@ void COrgCtrl::OnPaint() {
     dc.SetDCPenColor( RGB( 255, 255, 255 ) );
     dc.FillSolidRect( rcClient, RGB( 255, 255, 255 ) );
     dc.SetDCPenColor( RGB( 0, 0, 0 ) );
-    auto it = g_data.GetChildren().begin();
-    if ( it != g_data.GetChildren().end() ) {
-        paint_node( dc, *it );
+
+    if ( m_data ) {
+        auto it = m_data->GetRoot().GetChildren().begin();
+        if ( it != m_data->GetRoot().GetChildren().end() ) {
+            paint_node( dc, *it );
+        }
     }
 
     // flush to screen
@@ -186,18 +168,6 @@ void COrgCtrl::OnPaint() {
 }
 
 BOOL COrgCtrl::Create( DWORD dwStyle, const RECT & rect, CWnd * pParentWnd, UINT nID ) {
-    COrgCtrlDataItem::ptr_t pRoot = std::make_shared< COrgCtrlDataItem >();
-    pRoot->GetRect() = { 50, 50, 70, 60 };
-    COrgCtrlDataItem::ptr_t node1 = std::make_shared< COrgCtrlDataItem >();
-    node1->GetRect() = { 80, 20, 100, 30 };
-    COrgCtrlDataItem::ptr_t node2 = std::make_shared< COrgCtrlDataItem >();
-    node2->GetRect() = { 80, 40, 100, 50 };
-    COrgCtrlDataItem::ptr_t node3 = std::make_shared< COrgCtrlDataItem >();
-    node3->GetRect() = { 80, 60, 100, 70 };
-    g_data.GetChildren().push_back( pRoot );
-    pRoot->GetChildren().push_back( node1 );
-    pRoot->GetChildren().push_back( node2 );
-    pRoot->GetChildren().push_back( node3 );
     //g_view.SetZoomRatio( 4.7f );
     //g_view.SetZoomRatio( .3f );
     return CWnd::Create( NULL, _T( "" ), dwStyle | WS_CHILD | WS_VISIBLE | WS_TABSTOP |
@@ -211,7 +181,6 @@ float COrgCtrl::GetZoomRatio() const {
 void COrgCtrl::SetZoomRatio( float fZoomRatio ) {
     g_view.SetZoomRatio( fZoomRatio );
 }
-
 
 BOOL COrgCtrl::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt ) {
     
@@ -287,4 +256,8 @@ void COrgCtrl::OnTimer( UINT_PTR nIDEvent ) {
 BOOL COrgCtrl::OnEraseBkgnd( CDC * pDC ) {
     // avoid flickering
     return TRUE;
+}
+
+void COrgCtrl::SetData( const COrgCtrlData::ptr_t data ) {
+    m_data = data;
 }
