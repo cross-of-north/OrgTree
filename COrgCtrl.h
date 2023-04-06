@@ -39,6 +39,11 @@ private:
 	BOOL RegisterWndClass();
 	CPoint oldpt;
 	BOOL flag;
+
+	float GetZoomRatio() const;
+	void SetZoomRatio( float fZoomRatio );
+
 public:
 	afx_msg void OnPaint();
+	afx_msg BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
 };
