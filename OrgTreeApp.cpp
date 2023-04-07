@@ -67,11 +67,11 @@ OrgTreeApp::OrgTreeApp() noexcept
 	COrgCtrlDataItem::ptr_t pRoot = std::make_shared< COrgCtrlDataItem >();
 	pRoot->GetRect() = { 50, 50, 70, 60 };
 	COrgCtrlDataItem::ptr_t node1 = std::make_shared< COrgCtrlDataItem >();
-	node1->GetRect() = { 80, 20, 100, 30 };
+	node1->GetRect() = { 80, 10, 100, 20 };
 	COrgCtrlDataItem::ptr_t node2 = std::make_shared< COrgCtrlDataItem >();
 	node2->GetRect() = { 80, 40, 100, 50 };
 	COrgCtrlDataItem::ptr_t node3 = std::make_shared< COrgCtrlDataItem >();
-	node3->GetRect() = { 80, 60, 100, 70 };
+	node3->GetRect() = { 80, 70, 100, 80 };
 	pRoot->GetChildren().push_back( node1 );
 	pRoot->GetChildren().push_back( node2 );
 	pRoot->GetChildren().push_back( node3 );

@@ -14,7 +14,7 @@ protected:
     CRect m_rcNormalDataRect;
     CRect m_rcTransposedDataRect;
     CRect ToNormalViewRect( const CRect & rcRect ) const;
-    CRect ToTransposedViewRect( const CRect & rcRect ) const;
+    CRect ToTransposedViewRect( const CRect & rcRect, const bool bRotate = false ) const;
 public:
     float GetZoomRatio() const { return m_fZoomRatio; }
     void SetZoomRatio( float fZoomRatio, const CPoint & ptCenter = {} );

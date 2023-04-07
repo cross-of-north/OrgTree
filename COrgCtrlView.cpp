@@ -13,7 +13,7 @@ CRect COrgCtrlView::ToNormalViewRect( const CRect & rcRect ) const {
     return rcViewRect;
 }
 
-CRect COrgCtrlView::ToTransposedViewRect( const CRect & rcRect ) const {
+CRect COrgCtrlView::ToTransposedViewRect( const CRect & rcRect, const bool bRotate ) const {
     CRect rcViewRect;
     rcViewRect.left = m_rcScreenRect.left + LONG( float( rcRect.top ) * m_fZoomRatio );
     rcViewRect.top = m_rcScreenRect.top + LONG( float( rcRect.left ) * m_fZoomRatio );
@@ -21,6 +21,14 @@ CRect COrgCtrlView::ToTransposedViewRect( const CRect & rcRect ) const {
     rcViewRect.bottom = m_rcScreenRect.top + LONG( float( rcRect.right ) * m_fZoomRatio );
     CPoint offset( m_rcNormalDataRect.Width() / 2, -m_rcNormalDataRect.Height() / 2 );
     rcViewRect.OffsetRect( offset );
+    if ( bRotate ) {
+        auto width = rcViewRect.Width();
+        auto height = rcViewRect.Height();
+        rcViewRect.left = rcViewRect.left + width / 2 - height / 2;
+        rcViewRect.right = rcViewRect.right - width / 2 + height / 2;
+        rcViewRect.top = rcViewRect.top + height / 2 - width / 2;
+        rcViewRect.bottom = rcViewRect.bottom - height / 2 + width / 2;
+    }
     return rcViewRect;
 }
 
@@ -34,12 +42,12 @@ CRect COrgCtrlView::ToViewRect( const CRect & rcRect ) const {
         }
         case COrgCtrlView::Mode::Tree:
         {
-            rcViewRect = ToTransposedViewRect( rcRect );
+            rcViewRect = ToTransposedViewRect( rcRect, true );
             break;
         }
         case COrgCtrlView::Mode::UpsideDownTree:
         {
-            rcViewRect = ToTransposedViewRect( rcRect );
+            rcViewRect = ToTransposedViewRect( rcRect, true );
             ASSERT( !m_rcTransposedDataRect.IsRectEmpty() );
             CPoint center = m_rcTransposedDataRect.CenterPoint();
             rcViewRect.top += ( center.y - rcViewRect.top ) * 2;
