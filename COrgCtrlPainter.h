@@ -1,0 +1,16 @@
+#pragma once
+
+#include "COrgCtrlData.h"
+#include "COrgCtrlview.h"
+
+class COrgCtrlPainter {
+protected:
+    CDC & m_dc;
+    const CRect m_rcClient;
+    const COrgCtrlData & m_data;
+    const COrgCtrlView & m_view;
+    void PaintNode( const COrgCtrlDataItem::ptr_t & node );
+public:
+    COrgCtrlPainter( CDC & dc, const CRect & rcClient, const COrgCtrlData & data, const COrgCtrlView & view );
+    void Paint( void );
+};

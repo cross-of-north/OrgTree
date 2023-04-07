@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include "COrgCtrl.h"
+#include "COrgCtrlPainter.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -79,54 +80,13 @@ int COrgCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
   if (CWnd::OnCreate(lpCreateStruct) == -1)
     return -1;
-  
-  // TODO: Add your specialized creation code here
-
-  
   return 0;
 }
 
-
 void COrgCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
 {
-  // TODO: Add your message handler code here and/or call default
-  
   m_bDragging=FALSE;
-
   //CWnd::OnLButtonUp(nFlags, point);
-}
-
-class COrgCtrlView {
-protected:
-    float m_fZoomRatio{ 1 };
-    CRect m_rcScreenRect;
-public:
-    float GetZoomRatio() const { return m_fZoomRatio; }
-    void SetZoomRatio( float fZoomRatio ) { m_fZoomRatio = fZoomRatio; }
-    const CRect & GetScreenRect() const { return m_rcScreenRect; }
-    CRect & GetScreenRect() { return m_rcScreenRect; }
-    CRect ToViewRect( const CRect & rcRect ) const {
-        CRect rcViewRect;
-        rcViewRect.left = m_rcScreenRect.left + LONG( float( rcRect.left ) * m_fZoomRatio );
-        rcViewRect.top = m_rcScreenRect.top + LONG( float( rcRect.top ) * m_fZoomRatio );
-        rcViewRect.right = m_rcScreenRect.left + LONG( float( rcRect.right ) * m_fZoomRatio );
-        rcViewRect.bottom = m_rcScreenRect.top + LONG( float( rcRect.bottom ) * m_fZoomRatio );
-        return rcViewRect;
-    }
-};
-
-COrgCtrlView g_view{};
-
-void paint_node( CDC & dc, const COrgCtrlDataItem::ptr_t & node ) {
-    const CRect node_rect = g_view.ToViewRect( node->GetRect() );
-    ASSERT( !node_rect.IsRectEmpty() );
-    for ( const auto & child : node->GetChildren() ) {
-        const CRect child_rect = g_view.ToViewRect( child->GetRect() );
-        dc.MoveTo( node_rect.left + node_rect.Width() / 2, node_rect.top + node_rect.Height() / 2 );
-        dc.LineTo( child_rect.left + child_rect.Width() / 2, child_rect.top + child_rect.Height() / 2 );
-        paint_node( dc, child );
-    }
-    dc.Rectangle( node_rect );
 }
 
 void COrgCtrl::OnPaint() {
@@ -152,10 +112,8 @@ void COrgCtrl::OnPaint() {
     dc.SetDCPenColor( RGB( 0, 0, 0 ) );
 
     if ( m_data ) {
-        auto it = m_data->GetRoot().GetChildren().begin();
-        if ( it != m_data->GetRoot().GetChildren().end() ) {
-            paint_node( dc, *it );
-        }
+        COrgCtrlPainter painter( dc, rcClient, *m_data, m_view );
+        painter.Paint();
     }
 
     // flush to screen
@@ -168,18 +126,19 @@ void COrgCtrl::OnPaint() {
 }
 
 BOOL COrgCtrl::Create( DWORD dwStyle, const RECT & rect, CWnd * pParentWnd, UINT nID ) {
-    //g_view.SetZoomRatio( 4.7f );
-    //g_view.SetZoomRatio( .3f );
+    //SetZoomRatio( 4.7f );
+    //SetZoomRatio( .3f );
     return CWnd::Create( NULL, _T( "" ), dwStyle | WS_CHILD | WS_VISIBLE | WS_TABSTOP |
         ES_AUTOHSCROLL | WS_BORDER, rect, pParentWnd, nID );
 }
 
 float COrgCtrl::GetZoomRatio() const {
-    return g_view.GetZoomRatio();
+    return m_view.GetZoomRatio();
 }
 
-void COrgCtrl::SetZoomRatio( float fZoomRatio ) {
-    g_view.SetZoomRatio( fZoomRatio );
+void COrgCtrl::SetZoomRatio( float fZoomRatio, const CPoint & ptCenter ) {
+    m_view.SetZoomRatio( fZoomRatio, ptCenter );
+    Invalidate();
 }
 
 BOOL COrgCtrl::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt ) {
@@ -193,21 +152,11 @@ BOOL COrgCtrl::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt ) {
         } else {
             fNewZoomRatio = fOldZoomRatio * 0.9f;
         }
-        SetZoomRatio( fNewZoomRatio );
-
         // Adjust the view rect to keep the mouse cursor at the same position.
         CPoint ptCursor;
         ::GetCursorPos( &ptCursor );
         ScreenToClient( &ptCursor );
-        CPoint ptCornerDistance = ptCursor - g_view.GetScreenRect().TopLeft();
-        CPoint ptNewCornerDistance = ptCornerDistance;
-        float fRateChange = fNewZoomRatio / fOldZoomRatio;
-        ptNewCornerDistance.x = LONG( float( ptNewCornerDistance.x ) * fRateChange );
-        ptNewCornerDistance.y = LONG( float( ptNewCornerDistance.y ) * fRateChange );
-        CPoint ptOffset = ptCornerDistance - ptNewCornerDistance;
-        g_view.GetScreenRect().OffsetRect( ptOffset );
-
-        Invalidate();
+        SetZoomRatio( fNewZoomRatio, ptCursor );
     }
 
     return CWnd::OnMouseWheel( nFlags, zDelta, pt );
@@ -224,7 +173,7 @@ void COrgCtrl::OnLButtonDown( UINT nFlags, CPoint point ) {
 void COrgCtrl::OnMouseMove( UINT nFlags, CPoint point ) {
     if ( m_bDragging == TRUE ) {
         CPoint delta = point - m_ptPrevDragPoint;
-        g_view.GetScreenRect().OffsetRect( delta );
+        m_view.Offset( delta );
         m_ptPrevDragPoint = point;
         m_bInvalidate = TRUE;
         m_nTimerID = ::SetTimer( GetSafeHwnd(), m_nTimerID, 10, NULL );
@@ -236,9 +185,7 @@ void COrgCtrl::OnSize( UINT nType, int cx, int cy ) {
     CWnd::OnSize( nType, cx, cy );
     CRect rcClient;
     GetClientRect( rcClient );
-    CRect & rcView = g_view.GetScreenRect();
-    rcView.right = rcView.left + rcClient.Width();
-    rcView.bottom = rcView.top + rcClient.Height();
+    m_view.SetSize( rcClient.Width(), rcClient.Height() );
 }
 
 void COrgCtrl::OnTimer( UINT_PTR nIDEvent ) {

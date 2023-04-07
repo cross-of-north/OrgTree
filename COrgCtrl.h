@@ -1,6 +1,7 @@
 #pragma once
 
 #include "COrgCtrlData.h"
+#include "COrgCtrlView.h"
 
 #define ORGCTRLWNDCLASS _T("OrgCtrl")
 
@@ -44,9 +45,10 @@ private:
 	UINT_PTR m_nTimerID{ 0 };
 	BOOL m_bInvalidate{ FALSE };
 	COrgCtrlData::ptr_t m_data;
+	COrgCtrlView m_view;
 
 	float GetZoomRatio() const;
-	void SetZoomRatio( float fZoomRatio );
+	void SetZoomRatio( float fZoomRatio, const CPoint & ptCenter = {} );
 
 public:
 	afx_msg void OnPaint();

@@ -48,6 +48,12 @@
     <ClInclude Include="COrgCtrlData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="COrgCtrlView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="COrgCtrlPainter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -72,6 +78,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="COrgCtrlData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="COrgCtrlView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="COrgCtrlPainter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

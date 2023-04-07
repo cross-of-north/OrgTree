@@ -186,6 +186,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="COrgCtrlData.h" />
+    <ClInclude Include="COrgCtrlPainter.h" />
+    <ClInclude Include="COrgCtrlView.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="COrgCtrl.h" />
@@ -199,6 +201,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="COrgCtrlData.cpp" />
+    <ClCompile Include="COrgCtrlPainter.cpp" />
+    <ClCompile Include="COrgCtrlView.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="COrgCtrl.cpp" />
     <ClCompile Include="OrgTreeApp.cpp" />
