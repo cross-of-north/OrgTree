@@ -256,15 +256,24 @@ void MainFrame::OnUpdateFilePrintPreview(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(IsPrintPreview());
 }
 
+void MainFrame::SetOrgCtrlMode( const COrgCtrlView::Mode mode ) {
+	OrgTreeView * view = dynamic_cast < OrgTreeView * > ( GetActiveView() );
+	if ( view != NULL ) {
+		COrgCtrl & ctrl = view->GetOrgCtrl();
+		ctrl.GetView().SetMode( mode );
+		ctrl.Invalidate();
+	}
+}
 
 void MainFrame::OnLeftToRightOrgTreeViewButton()
 {
-	// TODO: Add your command handler code here
+	SetOrgCtrlMode( COrgCtrlView::Mode::LeftToRight );
 }
 
 
 void MainFrame::OnDownwardOrgTreeViewButton()
 {
+	SetOrgCtrlMode( COrgCtrlView::Mode::UpsideDownTree );
 	// CreateMainFrameContextNodeGridRow( const CString& uniqueAggregateNodeId, const CString& productionRuleString, DWORD parentCxNodeObjId, DWORD cxNodeObjId, DWORD cxNodeThreadId )
 	// uniqueAggregateNodeId = L"Boy@c0:627e:7f00:d5:d430:ef2d:23bd:26f0#57895#23", productionRuleString = L"( Wife? & Parents & Children* ) | CDATA )", parentCxNodeObjId = 0, cxNodeObjId = 1193322685, cxNodeThreadId = 75716
 	// uniqueAggregateNodeId = L"Parents@c0:627e:7f00:37:c216:396:1e89:d374#58768#23", productionRuleString = L"CDATA", parentCxNodeObjId = 1193322685, cxNodeObjId = 371259990, cxNodeThreadId = 74612
@@ -275,4 +284,5 @@ void MainFrame::OnDownwardOrgTreeViewButton()
 
 void MainFrame::OnUpwardOrgTreeViewButton()
 {
+	SetOrgCtrlMode( COrgCtrlView::Mode::Tree );
 }

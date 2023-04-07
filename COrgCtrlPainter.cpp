@@ -20,6 +20,8 @@ void COrgCtrlPainter::Paint( void ) {
 
     auto it = m_data.GetRoot().GetChildren().begin();
     if ( it != m_data.GetRoot().GetChildren().end() ) {
+        MeasureNode( *it );
+        m_view.SetDataRect( m_rcDataBorders );
         PaintNode( *it );
     }
 }
@@ -34,4 +36,11 @@ void COrgCtrlPainter::PaintNode( const COrgCtrlDataItem::ptr_t & node ) {
         PaintNode( child );
     }
     m_dc.Rectangle( node_rect );
+}
+
+void COrgCtrlPainter::MeasureNode( const COrgCtrlDataItem::ptr_t & node ) {
+    m_rcDataBorders.UnionRect( m_rcDataBorders, node->GetRect() );
+    for ( const auto & child : node->GetChildren() ) {
+        MeasureNode( child );
+    }
 }

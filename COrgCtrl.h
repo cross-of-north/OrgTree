@@ -58,4 +58,6 @@ public:
 	afx_msg BOOL OnEraseBkgnd( CDC * pDC );
 
 	void SetData( const COrgCtrlData::ptr_t data );
+	COrgCtrlData::ptr_t GetData() { return m_data; }
+	COrgCtrlView & GetView() { return m_view; }
 };

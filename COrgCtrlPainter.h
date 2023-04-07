@@ -9,6 +9,8 @@ protected:
     const CRect m_rcClient;
     const COrgCtrlData & m_data;
     const COrgCtrlView & m_view;
+    CRect m_rcDataBorders;
+    void MeasureNode( const COrgCtrlDataItem::ptr_t & node );
     void PaintNode( const COrgCtrlDataItem::ptr_t & node );
 public:
     COrgCtrlPainter( CDC & dc, const CRect & rcClient, const COrgCtrlData & data, const COrgCtrlView & view );

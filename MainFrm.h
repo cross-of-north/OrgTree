@@ -14,6 +14,8 @@
 
 #pragma once
 #include "PropertiesWnd.h"
+#include "COrgCtrl.h"
+
 
 class MainFrame : public CFrameWndEx
 {
@@ -59,6 +61,7 @@ protected:
 
 	BOOL CreateDockingWindows();
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
+	void SetOrgCtrlMode( const COrgCtrlView::Mode mode );
 public:
 	afx_msg void OnLeftToRightOrgTreeViewButton();
 	afx_msg void OnDownwardOrgTreeViewButton();
