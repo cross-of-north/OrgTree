@@ -42,6 +42,7 @@ END_MESSAGE_MAP()
 // OrgTreeApp construction
 
 OrgTreeApp::OrgTreeApp() noexcept
+	: m_data( std::make_shared< COrgCtrlData >() ) 
 {
 	m_bHiColorIcons = TRUE;
 
@@ -62,6 +63,20 @@ OrgTreeApp::OrgTreeApp() noexcept
 
 	// TODO: add construction code here,
 	// Place all significant initialization in InitInstance
+
+	COrgCtrlDataItem::ptr_t pRoot = std::make_shared< COrgCtrlDataItem >();
+	pRoot->GetRect() = { 50, 50, 70, 60 };
+	COrgCtrlDataItem::ptr_t node1 = std::make_shared< COrgCtrlDataItem >();
+	node1->GetRect() = { 80, 20, 100, 30 };
+	COrgCtrlDataItem::ptr_t node2 = std::make_shared< COrgCtrlDataItem >();
+	node2->GetRect() = { 80, 40, 100, 50 };
+	COrgCtrlDataItem::ptr_t node3 = std::make_shared< COrgCtrlDataItem >();
+	node3->GetRect() = { 80, 60, 100, 70 };
+	pRoot->GetChildren().push_back( node1 );
+	pRoot->GetChildren().push_back( node2 );
+	pRoot->GetChildren().push_back( node3 );
+
+	m_data->GetRoot().GetChildren().push_back( pRoot );
 }
 
 // The one and only OrgTreeApp object
@@ -144,6 +159,14 @@ BOOL OrgTreeApp::InitInstance()
 	// app was launched with /RegServer, /Register, /Unregserver or /Unregister.
 	if (!ProcessShellCommand(cmdInfo))
 		return FALSE;
+
+	OrgTreeView * view = dynamic_cast < OrgTreeView * > ( ( ( CFrameWnd * )m_pMainWnd )->GetActiveView() );
+	if ( view == NULL ) {
+		ASSERT( FALSE );
+	} else {
+		COrgCtrl & orgCtrl = view->GetOrgCtrl();
+		orgCtrl.SetData( m_data );
+	}
 
 	// The one and only window has been initialized, so show and update it
 	m_pMainWnd->ShowWindow(SW_SHOW);

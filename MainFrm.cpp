@@ -16,6 +16,8 @@
 #include "framework.h"
 #include "resource.h"
 #include "OrgTreeApp.h"
+#include "OrgTreeView.h"
+#include "OrgTreeDoc.h"
 
 #include "MainFrm.h"
 

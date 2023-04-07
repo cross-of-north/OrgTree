@@ -19,6 +19,8 @@
 
 #include "resource.h"       // main symbols
 
+#include "COrgCtrlData.h"
+
 
 // OrgTreeApp:
 // See OrgTree.cpp for the implementation of this class
@@ -26,6 +28,7 @@
 
 class OrgTreeApp : public CWinAppEx
 {
+
 public:
 	OrgTreeApp() noexcept;
 
@@ -45,6 +48,11 @@ public:
 
 	afx_msg void OnAppAbout();
 	DECLARE_MESSAGE_MAP()
+
+protected:
+	COrgCtrlData::ptr_t m_data;
+
+
 };
 
 extern OrgTreeApp theApp;

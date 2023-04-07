@@ -15,6 +15,7 @@
 #pragma once
 
 #include "COrgCtrl.h"
+#include "OrgTreeDoc.h"
 
 class OrgTreeView : public CFormView
 {
@@ -31,6 +32,7 @@ public:
 // Attributes
 public:
 	OrgTreeDoc* GetDocument() const;
+	COrgCtrl & GetOrgCtrl() { return m_orgCtrl; }
 
 // Operations
 public:
@@ -76,8 +78,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnSize( UINT nType, int cx, int cy );
-protected:
-	COrgCtrlData::ptr_t m_data;
 };
 
 #ifndef _DEBUG  // debug version in OrgTreeView.cpp
