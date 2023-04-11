@@ -189,6 +189,7 @@
     <ClInclude Include="COrgCtrlPainter.h" />
     <ClInclude Include="COrgCtrlView.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="IOrgTreeDoc.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="COrgCtrl.h" />
     <ClInclude Include="OrgTreeApp.h" />

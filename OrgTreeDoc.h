@@ -17,9 +17,10 @@
 
 
 #include "COrgCtrlData.h"
+#include "IOrgTreeDoc.h"
 
 
-class OrgTreeDoc : public CDocument
+class OrgTreeDoc : public CDocument, public IOrgTreeDoc
 {
 protected: // create from serialization only
 	OrgTreeDoc() noexcept;
@@ -51,6 +52,10 @@ public:
 	COrgCtrlData::ptr_t GetData() { return m_data; }
 
 	bool CreateContextNode( const CString & uniqueAggregateNodeId, const CString & productionRuleString, ULONG64 parentCxNodeObjId, ULONG64 cxNodeObjId, DWORD cxNodeThreadId );
+
+	virtual const IOrgTreeDoc::node_handle_t GetRootNode() const;
+	virtual const IOrgTreeDoc::node_handle_t GetNextChildNode( const IOrgTreeDoc::node_handle_t hParent, const IOrgTreeDoc::node_handle_t hCurrentChild ) const;
+	virtual const CRect GetNodeRect( const IOrgTreeDoc::node_handle_t hNode ) const;
 
 protected:
 

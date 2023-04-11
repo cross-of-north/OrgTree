@@ -111,7 +111,7 @@ void COrgCtrl::OnPaint() {
     dc.FillSolidRect( rcClient, RGB( 255, 255, 255 ) );
     dc.SetDCPenColor( RGB( 0, 0, 0 ) );
 
-    if ( m_data ) {
+    if ( m_data != NULL ) {
         COrgCtrlPainter painter( dc, rcClient, *m_data, m_view );
         painter.Paint();
     }
@@ -205,6 +205,6 @@ BOOL COrgCtrl::OnEraseBkgnd( CDC * pDC ) {
     return TRUE;
 }
 
-void COrgCtrl::SetData( const COrgCtrlData::ptr_t data ) {
+void COrgCtrl::SetData( const IOrgTreeDoc * data ) {
     m_data = data;
 }

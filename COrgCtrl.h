@@ -1,6 +1,6 @@
 #pragma once
 
-#include "COrgCtrlData.h"
+#include "IOrgTreeDoc.h"
 #include "COrgCtrlView.h"
 
 #define ORGCTRLWNDCLASS _T("OrgCtrl")
@@ -44,7 +44,7 @@ private:
 	BOOL m_bDragging{ FALSE };
 	UINT_PTR m_nTimerID{ 0 };
 	BOOL m_bInvalidate{ FALSE };
-	COrgCtrlData::ptr_t m_data;
+	const IOrgTreeDoc * m_data{ nullptr };
 	COrgCtrlView m_view;
 
 	float GetZoomRatio() const;
@@ -57,7 +57,7 @@ public:
 	afx_msg void OnTimer( UINT_PTR nIDEvent );
 	afx_msg BOOL OnEraseBkgnd( CDC * pDC );
 
-	void SetData( const COrgCtrlData::ptr_t data );
-	COrgCtrlData::ptr_t GetData() { return m_data; }
+	void SetData( const IOrgTreeDoc * data );
+	const IOrgTreeDoc * GetData() { return m_data; }
 	COrgCtrlView & GetView() { return m_view; }
 };
