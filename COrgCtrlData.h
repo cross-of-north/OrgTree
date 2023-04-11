@@ -20,6 +20,9 @@ public:
         m_children.push_back( pChild );
         pChild->SetParent( this );
     }
+    void Clear() {
+        m_children.clear();
+    }
 private:
     COrgCtrlDataItem( const COrgCtrlDataItem & source ) = delete;
     COrgCtrlDataItem & operator =( const COrgCtrlDataItem & source ) = delete;

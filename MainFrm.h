@@ -49,6 +49,8 @@ protected:  // control bar embedded members
 	CMFCRibbonStatusBar  m_wndStatusBar;
 	CPropertiesWnd    m_wndProperties;
 
+	COrgCtrl * GetOrgCtrl() const;
+
 // Generated message map functions
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
@@ -67,6 +69,7 @@ public:
 	afx_msg void OnDownwardOrgTreeViewButton();
 	afx_msg void OnUpwardOrgTreeViewButton();
 	afx_msg void OnOutlookOrgTreeViewButton();
+	afx_msg void OnAddButton();
 };
 
 

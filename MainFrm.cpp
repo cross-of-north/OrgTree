@@ -41,6 +41,7 @@ BEGIN_MESSAGE_MAP(MainFrame, CFrameWndEx)
 	ON_COMMAND( ID_DOWNWARD_TREEVIEW_BUTTON, &MainFrame::OnDownwardOrgTreeViewButton )
 	ON_COMMAND( ID_UPWARD_TREEVIEW_BUTTON, &MainFrame::OnUpwardOrgTreeViewButton )
 	ON_COMMAND( ID_OUTLOOK_TREEVIEW_BUTTON, &MainFrame::OnOutlookOrgTreeViewButton )
+	ON_COMMAND( ID_ADD_BUTTON, &MainFrame::OnAddButton )
 END_MESSAGE_MAP()
 
 // MainFrame construction/destruction
@@ -257,12 +258,20 @@ void MainFrame::OnUpdateFilePrintPreview(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(IsPrintPreview());
 }
 
-void MainFrame::SetOrgCtrlMode( const COrgCtrlView::Mode mode ) {
+COrgCtrl * MainFrame::GetOrgCtrl() const {
+	COrgCtrl * ctrl = NULL;
 	OrgTreeView * view = dynamic_cast < OrgTreeView * > ( GetActiveView() );
 	if ( view != NULL ) {
-		COrgCtrl & ctrl = view->GetOrgCtrl();
-		ctrl.GetView().SetMode( mode );
-		ctrl.Invalidate();
+		ctrl = &view->GetOrgCtrl();
+	}
+	return ctrl;
+}
+
+void MainFrame::SetOrgCtrlMode( const COrgCtrlView::Mode mode ) {
+	COrgCtrl * ctrl = GetOrgCtrl();
+	if ( ctrl != NULL ) {
+		ctrl->GetView().SetMode( mode );
+		ctrl->Invalidate();
 	}
 }
 
@@ -275,12 +284,6 @@ void MainFrame::OnLeftToRightOrgTreeViewButton()
 void MainFrame::OnDownwardOrgTreeViewButton()
 {
 	SetOrgCtrlMode( COrgCtrlView::Mode::UpsideDownTree );
-	// CreateMainFrameContextNodeGridRow( const CString& uniqueAggregateNodeId, const CString& productionRuleString, DWORD parentCxNodeObjId, DWORD cxNodeObjId, DWORD cxNodeThreadId )
-	// uniqueAggregateNodeId = L"Boy@c0:627e:7f00:d5:d430:ef2d:23bd:26f0#57895#23", productionRuleString = L"( Wife? & Parents & Children* ) | CDATA )", parentCxNodeObjId = 0, cxNodeObjId = 1193322685, cxNodeThreadId = 75716
-	// uniqueAggregateNodeId = L"Parents@c0:627e:7f00:37:c216:396:1e89:d374#58768#23", productionRuleString = L"CDATA", parentCxNodeObjId = 1193322685, cxNodeObjId = 371259990, cxNodeThreadId = 74612
-	// uniqueAggregateNodeId = L"Children@c0:627e:7f00:e1:7cbf:f6cc:110a:d94e#60760#23", productionRuleString = L"CDATA", parentCxNodeObjId = 1193322685, cxNodeObjId = 700228782, cxNodeThreadId = 116612
-	// (see 'boy dtd grid.png' for how it looked in the prototype)
-  // (see 'Boy.dtd' which is the DTD that generated the above data)
 }
 
 void MainFrame::OnUpwardOrgTreeViewButton()
@@ -290,4 +293,22 @@ void MainFrame::OnUpwardOrgTreeViewButton()
 
 void MainFrame::OnOutlookOrgTreeViewButton() {
 	SetOrgCtrlMode( COrgCtrlView::Mode::Outlook );
+}
+
+void MainFrame::OnAddButton() {
+	COrgCtrl * ctrl = GetOrgCtrl();
+	if ( ctrl != NULL ) {
+		ctrl->GetData()->GetRoot().Clear();
+		COrgCtrlDataItem::ptr_t pNode = std::make_shared< COrgCtrlDataItem >();
+		pNode->GetRect() = { 0, 0, 20, 10 };
+		ctrl->GetData()->GetRoot().AddChild( pNode );
+		ctrl->Invalidate();
+	}
+
+	// CreateMainFrameContextNodeGridRow( const CString& uniqueAggregateNodeId, const CString& productionRuleString, DWORD parentCxNodeObjId, DWORD cxNodeObjId, DWORD cxNodeThreadId )
+	// uniqueAggregateNodeId = L"Boy@c0:627e:7f00:d5:d430:ef2d:23bd:26f0#57895#23", productionRuleString = L"( Wife? & Parents & Children* ) | CDATA )", parentCxNodeObjId = 0, cxNodeObjId = 1193322685, cxNodeThreadId = 75716
+	// uniqueAggregateNodeId = L"Parents@c0:627e:7f00:37:c216:396:1e89:d374#58768#23", productionRuleString = L"CDATA", parentCxNodeObjId = 1193322685, cxNodeObjId = 371259990, cxNodeThreadId = 74612
+	// uniqueAggregateNodeId = L"Children@c0:627e:7f00:e1:7cbf:f6cc:110a:d94e#60760#23", productionRuleString = L"CDATA", parentCxNodeObjId = 1193322685, cxNodeObjId = 700228782, cxNodeThreadId = 116612
+	// (see 'boy dtd grid.png' for how it looked in the prototype)
+  // (see 'Boy.dtd' which is the DTD that generated the above data)
 }
