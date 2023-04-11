@@ -19,9 +19,6 @@
 
 #include "resource.h"       // main symbols
 
-#include "COrgCtrlData.h"
-
-
 // OrgTreeApp:
 // See OrgTree.cpp for the implementation of this class
 //
@@ -50,8 +47,6 @@ public:
 	DECLARE_MESSAGE_MAP()
 
 protected:
-	COrgCtrlData::ptr_t m_data;
-
 
 };
 

@@ -296,13 +296,9 @@ void MainFrame::OnOutlookOrgTreeViewButton() {
 }
 
 void MainFrame::OnAddButton() {
-	COrgCtrl * ctrl = GetOrgCtrl();
-	if ( ctrl != NULL ) {
-		ctrl->GetData()->GetRoot().Clear();
-		COrgCtrlDataItem::ptr_t pNode = std::make_shared< COrgCtrlDataItem >();
-		pNode->GetRect() = { 0, 0, 20, 10 };
-		ctrl->GetData()->GetRoot().AddChild( pNode );
-		ctrl->Invalidate();
+	OrgTreeDoc * doc = dynamic_cast < OrgTreeDoc * > ( GetActiveDocument() );
+	if ( doc != NULL ) {
+        doc->CreateContextNode( CString(), CString(), 0, 0, 0);
 	}
 
 	// CreateMainFrameContextNodeGridRow( const CString& uniqueAggregateNodeId, const CString& productionRuleString, DWORD parentCxNodeObjId, DWORD cxNodeObjId, DWORD cxNodeThreadId )

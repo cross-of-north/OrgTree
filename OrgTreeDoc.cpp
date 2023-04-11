@@ -17,6 +17,8 @@
 
 #include "OrgTreeDoc.h"
 
+#include "OrgTreeView.h"
+
 #include <propkey.h>
 
 #ifdef _DEBUG
@@ -34,6 +36,7 @@ END_MESSAGE_MAP()
 // OrgTreeDoc construction/destruction
 
 OrgTreeDoc::OrgTreeDoc() noexcept
+	: m_data( std::make_shared< COrgCtrlData >() ) 
 {
 	// TODO: add one-time construction code here
 
@@ -41,6 +44,29 @@ OrgTreeDoc::OrgTreeDoc() noexcept
 
 OrgTreeDoc::~OrgTreeDoc()
 {
+}
+
+void OrgTreeDoc::FillByTestData() {
+	COrgCtrlDataItem::ptr_t pRoot = std::make_shared< COrgCtrlDataItem >();
+	pRoot->GetRect() = { 50, 50, 70, 60 };
+	COrgCtrlDataItem::ptr_t node1 = std::make_shared< COrgCtrlDataItem >();
+	node1->GetRect() = { 80, 10, 100, 20 };
+	COrgCtrlDataItem::ptr_t node2 = std::make_shared< COrgCtrlDataItem >();
+	node2->GetRect() = { 80, 40, 100, 50 };
+	COrgCtrlDataItem::ptr_t node3 = std::make_shared< COrgCtrlDataItem >();
+	node3->GetRect() = { 80, 70, 100, 80 };
+	COrgCtrlDataItem::ptr_t node4 = std::make_shared< COrgCtrlDataItem >();
+	node4->GetRect() = { 110, 60, 130, 70 };
+	COrgCtrlDataItem::ptr_t node5 = std::make_shared< COrgCtrlDataItem >();
+	node5->GetRect() = { 110, 90, 130, 100 };
+	pRoot->AddChild( node1 );
+	pRoot->AddChild( node2 );
+	node2->AddChild( node4 );
+	node2->AddChild( node5 );
+	pRoot->AddChild( node3 );
+
+	m_data->GetRoot().Clear();
+	m_data->GetRoot().AddChild( pRoot );
 }
 
 BOOL OrgTreeDoc::OnNewDocument()
@@ -139,5 +165,20 @@ void OrgTreeDoc::Dump(CDumpContext& dc) const
 }
 #endif //_DEBUG
 
+bool OrgTreeDoc::CreateContextNode( const CString & uniqueAggregateNodeId, const CString & productionRuleString, ULONG64 parentCxNodeObjId, ULONG64 cxNodeObjId, DWORD cxNodeThreadId ) {
+	m_data->GetRoot().Clear();
+	COrgCtrlDataItem::ptr_t pNode = std::make_shared< COrgCtrlDataItem >();
+	pNode->GetRect() = { 0, 0, 20, 10 };
+	m_data->GetRoot().AddChild( pNode );
+	OrgTreeView * pView = NULL;
+	POSITION pos = GetFirstViewPosition();
+	if ( pos != NULL ) {
+		pView = dynamic_cast < OrgTreeView * > ( GetNextView( pos ) );
+		if ( pView != NULL ) {
+			pView->Invalidate();
+		}
+	}
+	return TRUE;
+}
 
 // OrgTreeDoc commands

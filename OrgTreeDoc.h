@@ -16,6 +16,9 @@
 #pragma once
 
 
+#include "COrgCtrlData.h"
+
+
 class OrgTreeDoc : public CDocument
 {
 protected: // create from serialization only
@@ -44,8 +47,14 @@ public:
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
 #endif
+	void FillByTestData();
+	COrgCtrlData::ptr_t GetData() { return m_data; }
+
+	bool CreateContextNode( const CString & uniqueAggregateNodeId, const CString & productionRuleString, ULONG64 parentCxNodeObjId, ULONG64 cxNodeObjId, DWORD cxNodeThreadId );
 
 protected:
+
+	COrgCtrlData::ptr_t m_data;
 
 // Generated message map functions
 protected:
