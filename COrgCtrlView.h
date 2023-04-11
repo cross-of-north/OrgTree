@@ -6,6 +6,7 @@ public:
         LeftToRight,
         Tree,
         UpsideDownTree,
+        Outlook,
     } Mode;
 protected:
     float m_fZoomRatio{ 1 };
@@ -20,7 +21,7 @@ public:
     void SetZoomRatio( float fZoomRatio, const CPoint & ptCenter = {} );
     const CRect & GetScreenRect() const { return m_rcScreenRect; }
     CRect & GetScreenRect() { return m_rcScreenRect; }
-    CRect ToViewRect( const CRect & rcRect ) const;
+    CRect ToViewRect( const CRect & rcRect, const int iDepth = -1, const int iOrder = -1, const int iCount = -1 ) const;
     void Offset( const CPoint & offset );
     void SetSize( int cx, int cy );
     void SetMode( COrgCtrlView::Mode mode ) { m_mode = mode; }

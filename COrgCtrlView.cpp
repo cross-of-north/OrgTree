@@ -32,7 +32,7 @@ CRect COrgCtrlView::ToTransposedViewRect( const CRect & rcRect, const bool bRota
     return rcViewRect;
 }
 
-CRect COrgCtrlView::ToViewRect( const CRect & rcRect ) const {
+CRect COrgCtrlView::ToViewRect( const CRect & rcRect, const int iDepth, const int iOrder, const int iCount ) const {
     CRect rcViewRect = rcRect;
     switch ( m_mode ) {
         case COrgCtrlView::Mode::LeftToRight:
@@ -53,6 +53,16 @@ CRect COrgCtrlView::ToViewRect( const CRect & rcRect ) const {
             rcViewRect.top += ( center.y - rcViewRect.top ) * 2;
             rcViewRect.bottom += ( center.y - rcViewRect.bottom ) * 2;
             rcViewRect.NormalizeRect();
+            break;
+        }
+        case COrgCtrlView::Mode::Outlook:
+        {
+            CRect rcLayoutRect;
+            rcLayoutRect.top = iCount * rcRect.Height() * 2;
+            rcLayoutRect.bottom = rcLayoutRect.top + rcRect.Height();
+            rcLayoutRect.left = iDepth * rcRect.Width() * 2;
+            rcLayoutRect.right = rcLayoutRect.left + rcRect.Width();
+            rcViewRect = ToNormalViewRect( rcLayoutRect );
             break;
         }
         default:

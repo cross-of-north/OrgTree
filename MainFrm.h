@@ -66,6 +66,7 @@ public:
 	afx_msg void OnLeftToRightOrgTreeViewButton();
 	afx_msg void OnDownwardOrgTreeViewButton();
 	afx_msg void OnUpwardOrgTreeViewButton();
+	afx_msg void OnOutlookOrgTreeViewButton();
 };
 
 

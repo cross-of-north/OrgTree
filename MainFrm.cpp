@@ -40,6 +40,7 @@ BEGIN_MESSAGE_MAP(MainFrame, CFrameWndEx)
 	ON_COMMAND( ID_LEFTTORIGHT_TREEVIEW_BUTTON, &MainFrame::OnLeftToRightOrgTreeViewButton )
 	ON_COMMAND( ID_DOWNWARD_TREEVIEW_BUTTON, &MainFrame::OnDownwardOrgTreeViewButton )
 	ON_COMMAND( ID_UPWARD_TREEVIEW_BUTTON, &MainFrame::OnUpwardOrgTreeViewButton )
+	ON_COMMAND( ID_OUTLOOK_TREEVIEW_BUTTON, &MainFrame::OnOutlookOrgTreeViewButton )
 END_MESSAGE_MAP()
 
 // MainFrame construction/destruction
@@ -285,4 +286,8 @@ void MainFrame::OnDownwardOrgTreeViewButton()
 void MainFrame::OnUpwardOrgTreeViewButton()
 {
 	SetOrgCtrlMode( COrgCtrlView::Mode::Tree );
+}
+
+void MainFrame::OnOutlookOrgTreeViewButton() {
+	SetOrgCtrlMode( COrgCtrlView::Mode::Outlook );
 }
