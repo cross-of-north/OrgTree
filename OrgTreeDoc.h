@@ -20,6 +20,39 @@
 #include "IOrgTreeDoc.h"
 
 
+class OrgTreeDocNodeHandle : public IOrgTreeDocNodeHandle {
+
+private:
+
+	OrgTreeDocNodeHandle() = delete;
+	OrgTreeDocNodeHandle( const OrgTreeDocNodeHandle & ) = delete;
+	OrgTreeDocNodeHandle & operator=( const OrgTreeDocNodeHandle & ) = delete;
+
+protected:
+
+	ULONG64 m_handle{ INVALID_NODE_HANDLE };
+
+	static const ULONG64 INVALID_NODE_HANDLE = 0;
+
+public:
+
+	OrgTreeDocNodeHandle( ULONG64 handle ) : m_handle( handle ) {}
+	virtual ~OrgTreeDocNodeHandle() = default;
+
+	bool IsValid() const {
+		return m_handle != INVALID_NODE_HANDLE;
+	}
+
+	void SetHandle( ULONG64 handle ) {
+		m_handle = handle;
+	}
+	ULONG64 GetHandle() const {
+		return m_handle;
+	}
+
+};
+
+
 class OrgTreeDoc : public CDocument, public IOrgTreeDoc
 {
 protected: // create from serialization only
@@ -53,16 +86,16 @@ public:
 
 	bool CreateContextNode( const CString & uniqueAggregateNodeId, const CString & productionRuleString, ULONG64 parentCxNodeObjId, ULONG64 cxNodeObjId, DWORD cxNodeThreadId );
 
-	virtual bool GetRootNode( IOrgTreeDocNodeHandle & hNode ) const;
-	virtual bool GetNextChildNode( const IOrgTreeDocNodeHandle & hParent, IOrgTreeDocNodeHandle & hChild ) const;
-	virtual const CRect GetNodeRect( const IOrgTreeDocNodeHandle & hNode ) const;
+	virtual bool GetRootNode( POrgTreeDocNodeHandle & phNode ) const;
+	virtual bool GetNextChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phChild ) const;
+	virtual const CRect GetNodeRect( const POrgTreeDocNodeHandle & phNode ) const;
 
 protected:
 
 	COrgCtrlData::ptr_t m_data;
 
-	void GetNodeHandle( const COrgCtrlDataItem * node, IOrgTreeDocNodeHandle & hNode ) const;
-	static bool FromNodeHandle( const IOrgTreeDocNodeHandle & hNode, COrgCtrlDataItem * & node );
+	void GetNodeHandle( const COrgCtrlDataItem * node, POrgTreeDocNodeHandle & phNode ) const;
+	static bool FromNodeHandle( const POrgTreeDocNodeHandle & phNode, COrgCtrlDataItem * & node );
 
 	// Generated message map functions
 protected:

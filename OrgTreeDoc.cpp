@@ -70,34 +70,36 @@ void OrgTreeDoc::FillByTestData() {
 }
 
 
-void OrgTreeDoc::GetNodeHandle( const COrgCtrlDataItem * node, IOrgTreeDocNodeHandle & hNode ) const {
-	hNode.SetHandle( ( ULONG64 )node );
+void OrgTreeDoc::GetNodeHandle( const COrgCtrlDataItem * node, POrgTreeDocNodeHandle & phNode ) const {
+	phNode = std::make_shared< OrgTreeDocNodeHandle >( ( ULONG64 )node );
 }
 
-bool OrgTreeDoc::FromNodeHandle( const IOrgTreeDocNodeHandle & hNode, COrgCtrlDataItem * & node ) {
-	if ( hNode.IsValid() ) {
-        node = ( COrgCtrlDataItem * )hNode.GetHandle();
-	} else {
-		node = NULL;
+bool OrgTreeDoc::FromNodeHandle( const POrgTreeDocNodeHandle & phNode, COrgCtrlDataItem * & node ) {
+	node = NULL;
+	if ( phNode ) {
+		const OrgTreeDocNodeHandle & hNode = static_cast < const OrgTreeDocNodeHandle & > ( *phNode );
+		if ( hNode.IsValid() ) {
+			node = ( COrgCtrlDataItem * )hNode.GetHandle();
+		}
 	}
 	return node != NULL;
 }
 
-bool OrgTreeDoc::GetRootNode( IOrgTreeDocNodeHandle & hNode ) const {
-	GetNodeHandle( &m_data->GetRoot(), hNode );
-	return hNode.IsValid();
+bool OrgTreeDoc::GetRootNode( POrgTreeDocNodeHandle & phNode ) const {
+	GetNodeHandle( &m_data->GetRoot(), phNode );
+	return true;
 }
 
-bool OrgTreeDoc::GetNextChildNode( const IOrgTreeDocNodeHandle & hParent, IOrgTreeDocNodeHandle & hChild ) const {
-	
-	IOrgTreeDocNodeHandle hNextChild;
-	
+bool OrgTreeDoc::GetNextChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phChild ) const {
+
+	POrgTreeDocNodeHandle phNextChild;
+
 	COrgCtrlDataItem * parent = NULL;
-	if ( FromNodeHandle( hParent, parent ) ) {
+	if ( FromNodeHandle( phParent, parent ) ) {
 		auto children = parent->GetChildren();
 		int iNextChildOrder = COrgCtrlDataItem::INVALID_ORDER_HINT;
 		COrgCtrlDataItem * currentChild = NULL;
-		if ( FromNodeHandle( hChild, currentChild ) ) {
+		if ( FromNodeHandle( phChild, currentChild ) ) {
 			int iCurrentChildOrder = currentChild->GetOrderHint();
 			if ( iCurrentChildOrder == COrgCtrlDataItem::INVALID_ORDER_HINT ) {
 				for ( int i = 0; i < children.size(); i++ ) {
@@ -116,18 +118,18 @@ bool OrgTreeDoc::GetNextChildNode( const IOrgTreeDocNodeHandle & hParent, IOrgTr
 		if ( iNextChildOrder != COrgCtrlDataItem::INVALID_ORDER_HINT && children.size() > iNextChildOrder ) {
 			auto child = children[ iNextChildOrder ];
 			child->SetOrderHint( iNextChildOrder );
-			GetNodeHandle( child.get(), hNextChild );
+			GetNodeHandle( child.get(), phNextChild );
 		}
 	}
 	
-	hChild.SetHandle( hNextChild.GetHandle() );
+	phChild = phNextChild;
 
-	return hChild.IsValid();
+	return phChild && ( static_cast < OrgTreeDocNodeHandle & > ( *phChild ) ).IsValid();
 }
 
-const CRect OrgTreeDoc::GetNodeRect( const IOrgTreeDocNodeHandle & hNode ) const {
+const CRect OrgTreeDoc::GetNodeRect( const POrgTreeDocNodeHandle & phNode ) const {
 	COrgCtrlDataItem * node = NULL;
-	FromNodeHandle( hNode, node );
+	FromNodeHandle( phNode, node );
 	ASSERT( node != NULL );
 	return node == NULL ? CRect() : node->GetRect();
 }
