@@ -153,7 +153,7 @@ BOOL OrgTreeApp::InitInstance()
 		COrgCtrl & orgCtrl = view->GetOrgCtrl();
 		auto doc = view->GetDocument();
 		doc->FillByTestData();
-		orgCtrl.SetData( doc );
+		orgCtrl.SetDocument( doc );
 	}
 
 	// The one and only window has been initialized, so show and update it

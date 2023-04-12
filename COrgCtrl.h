@@ -44,7 +44,7 @@ private:
 	BOOL m_bDragging{ FALSE };
 	UINT_PTR m_nTimerID{ 0 };
 	BOOL m_bInvalidate{ FALSE };
-	const IOrgTreeDoc * m_data{ nullptr };
+	const IOrgTreeDoc * m_document{ nullptr };
 	COrgCtrlView m_view;
 
 	float GetZoomRatio() const;
@@ -57,7 +57,7 @@ public:
 	afx_msg void OnTimer( UINT_PTR nIDEvent );
 	afx_msg BOOL OnEraseBkgnd( CDC * pDC );
 
-	void SetData( const IOrgTreeDoc * data );
-	const IOrgTreeDoc * GetData() { return m_data; }
+	void SetDocument( const IOrgTreeDoc * document );
+	const IOrgTreeDoc * GetDocument() { return m_document; }
 	COrgCtrlView & GetView() { return m_view; }
 };
