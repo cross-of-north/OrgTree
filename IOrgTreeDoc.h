@@ -1,22 +1,44 @@
 #pragma once
 
+class IOrgTreeDocNodeHandle {
+
+    friend class IOrgTreeDoc;
+
+private:
+
+    IOrgTreeDocNodeHandle( const IOrgTreeDocNodeHandle & ) = delete;
+    IOrgTreeDocNodeHandle & operator=( const IOrgTreeDocNodeHandle & ) = delete;
+
+protected:
+
+    ULONG64 m_handle{ INVALID_NODE_HANDLE };
+
+    static const ULONG64 INVALID_NODE_HANDLE = 0;
+
+public:
+
+    IOrgTreeDocNodeHandle() = default;
+    IOrgTreeDocNodeHandle( ULONG64 handle ) : m_handle( handle ) {}
+
+    bool IsValid() const {
+        return m_handle != INVALID_NODE_HANDLE;
+    }
+
+    void SetHandle( ULONG64 handle ) {
+        m_handle = handle;
+    }
+    ULONG64 GetHandle() const {
+        return m_handle;
+    }
+
+};
+
 class IOrgTreeDoc {
 
 public:
 
-    typedef ULONG64 node_handle_t;
-    static const node_handle_t INVALID_NODE_HANDLE = 0;
-
-    static bool IsValidNode( const node_handle_t node ) {
-        return node != INVALID_NODE_HANDLE;
-    }
-
-    const node_handle_t GetFirstChildNode( const node_handle_t hParent ) const {
-        return GetNextChildNode( hParent, INVALID_NODE_HANDLE );
-    }
-
-    virtual const node_handle_t GetRootNode() const = 0;
-    virtual const node_handle_t GetNextChildNode( const node_handle_t hParent, const node_handle_t hCurrentChild ) const = 0;
-    virtual const CRect GetNodeRect( const node_handle_t hNode ) const = 0;
+    virtual bool GetRootNode( IOrgTreeDocNodeHandle & hNode ) const = 0;
+    virtual bool GetNextChildNode( const IOrgTreeDocNodeHandle & hParent, IOrgTreeDocNodeHandle & hChild ) const = 0;
+    virtual const CRect GetNodeRect( const IOrgTreeDocNodeHandle & hNode ) const = 0;
 
 };

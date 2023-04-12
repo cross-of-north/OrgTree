@@ -18,40 +18,42 @@ void COrgCtrlPainter::Paint( void ) {
     m_dc.FillSolidRect( m_rcClient, RGB( 255, 255, 255 ) );
     m_dc.SetDCPenColor( RGB( 0, 0, 0 ) );
 
-    auto hNode = m_data.GetFirstChildNode( m_data.GetRootNode() );
-    if ( m_data.IsValidNode( hNode ) ) {
-        MeasureNode( hNode );
+    IOrgTreeDocNodeHandle hRootNode;
+    IOrgTreeDocNodeHandle hFirstNode;
+    if ( 
+        m_data.GetRootNode( hRootNode ) && 
+        m_data.GetNextChildNode( hRootNode, hFirstNode )
+    ) {
+        MeasureNode( hFirstNode );
         m_view.SetDataRect( m_rcDataBorders );
         int iCount = 0;
-        PaintNode( hNode, 0, 0, iCount );
+        PaintNode( hFirstNode, 0, 0, iCount );
     }
 }
 
-void COrgCtrlPainter::PaintNode( const IOrgTreeDoc::node_handle_t hNode, const int iDepth, const int iOrder, int & iCount ) {
+void COrgCtrlPainter::PaintNode( const IOrgTreeDocNodeHandle & hNode, const int iDepth, const int iOrder, int & iCount ) {
     const CRect node_rect = m_view.ToViewRect( m_data.GetNodeRect( hNode ), iDepth, iOrder, iCount );
     iCount++;
     ASSERT( !node_rect.IsRectEmpty() );
     int iChildDepth = iDepth + 1;
     int iChildOrder = 0;
     
-    auto hChildNode = m_data.GetFirstChildNode( hNode );
-    while ( m_data.IsValidNode( hChildNode ) ) {
+    IOrgTreeDocNodeHandle hChildNode;
+    while ( m_data.GetNextChildNode( hNode, hChildNode ) ) {
         const CRect child_rect = m_view.ToViewRect( m_data.GetNodeRect( hChildNode ), iChildDepth, iChildOrder, iCount );
         m_dc.MoveTo( node_rect.left + node_rect.Width() / 2, node_rect.top + node_rect.Height() / 2 );
         m_dc.LineTo( child_rect.left + child_rect.Width() / 2, child_rect.top + child_rect.Height() / 2 );
         PaintNode( hChildNode, iChildDepth, iChildOrder, iCount );
         iChildOrder++;
-        hChildNode = m_data.GetNextChildNode( hNode, hChildNode );
     }
 
     m_dc.Rectangle( node_rect );
 }
 
-void COrgCtrlPainter::MeasureNode( const IOrgTreeDoc::node_handle_t hNode ) {
+void COrgCtrlPainter::MeasureNode( const IOrgTreeDocNodeHandle & hNode ) {
     m_rcDataBorders.UnionRect( m_rcDataBorders, m_data.GetNodeRect( hNode ) );
-    auto hChildNode = m_data.GetFirstChildNode( hNode );
-    while ( m_data.IsValidNode( hChildNode ) ) {
+    IOrgTreeDocNodeHandle hChildNode;
+    while ( m_data.GetNextChildNode( hNode, hChildNode ) ) {
         MeasureNode( hChildNode );
-        hChildNode = m_data.GetNextChildNode( hNode, hChildNode );
     }
 }

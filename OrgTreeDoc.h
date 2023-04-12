@@ -53,15 +53,18 @@ public:
 
 	bool CreateContextNode( const CString & uniqueAggregateNodeId, const CString & productionRuleString, ULONG64 parentCxNodeObjId, ULONG64 cxNodeObjId, DWORD cxNodeThreadId );
 
-	virtual const IOrgTreeDoc::node_handle_t GetRootNode() const;
-	virtual const IOrgTreeDoc::node_handle_t GetNextChildNode( const IOrgTreeDoc::node_handle_t hParent, const IOrgTreeDoc::node_handle_t hCurrentChild ) const;
-	virtual const CRect GetNodeRect( const IOrgTreeDoc::node_handle_t hNode ) const;
+	virtual bool GetRootNode( IOrgTreeDocNodeHandle & hNode ) const;
+	virtual bool GetNextChildNode( const IOrgTreeDocNodeHandle & hParent, IOrgTreeDocNodeHandle & hChild ) const;
+	virtual const CRect GetNodeRect( const IOrgTreeDocNodeHandle & hNode ) const;
 
 protected:
 
 	COrgCtrlData::ptr_t m_data;
 
-// Generated message map functions
+	void GetNodeHandle( const COrgCtrlDataItem * node, IOrgTreeDocNodeHandle & hNode ) const;
+	static bool FromNodeHandle( const IOrgTreeDocNodeHandle & hNode, COrgCtrlDataItem * & node );
+
+	// Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
 

@@ -27,12 +27,6 @@ public:
     void Clear() {
         m_children.clear();
     }
-    const IOrgTreeDoc::node_handle_t GetHandle() const {
-        return ( IOrgTreeDoc::node_handle_t )this;
-    }
-    static COrgCtrlDataItem * FromHandle( const IOrgTreeDoc::node_handle_t hNode ) {
-        return ( IOrgTreeDoc::IsValidNode( hNode ) ) ? ( COrgCtrlDataItem * )hNode : NULL;
-    }
     int GetOrderHint() const { return m_iOrderHint; }
     void SetOrderHint( const int iOrderHint ) { m_iOrderHint = iOrderHint; }
 
