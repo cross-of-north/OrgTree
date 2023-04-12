@@ -70,8 +70,8 @@ void OrgTreeDoc::FillByTestData() {
 }
 
 
-void OrgTreeDoc::GetNodeHandle( const COrgCtrlDataItem * node, POrgTreeDocNodeHandle & phNode ) const {
-	phNode = std::make_shared< OrgTreeDocNodeHandle >( ( ULONG64 )node );
+void OrgTreeDoc::GetNodeHandle( COrgCtrlDataItem * node, POrgTreeDocNodeHandle & phNode ) const {
+	phNode = std::make_shared< OrgTreeDocNodeHandle >( node );
 }
 
 bool OrgTreeDoc::FromNodeHandle( const POrgTreeDocNodeHandle & phNode, COrgCtrlDataItem * & node ) {
@@ -79,7 +79,7 @@ bool OrgTreeDoc::FromNodeHandle( const POrgTreeDocNodeHandle & phNode, COrgCtrlD
 	if ( phNode ) {
 		const OrgTreeDocNodeHandle & hNode = static_cast < const OrgTreeDocNodeHandle & > ( *phNode );
 		if ( hNode.IsValid() ) {
-			node = ( COrgCtrlDataItem * )hNode.GetHandle();
+			node = hNode.m_node;
 		}
 	}
 	return node != NULL;

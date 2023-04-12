@@ -22,6 +22,8 @@
 
 class OrgTreeDocNodeHandle : public IOrgTreeDocNodeHandle {
 
+	friend class OrgTreeDoc;
+
 private:
 
 	OrgTreeDocNodeHandle() = delete;
@@ -30,24 +32,15 @@ private:
 
 protected:
 
-	ULONG64 m_handle{ INVALID_NODE_HANDLE };
-
-	static const ULONG64 INVALID_NODE_HANDLE = 0;
+	COrgCtrlDataItem * m_node{ nullptr };
 
 public:
 
-	OrgTreeDocNodeHandle( ULONG64 handle ) : m_handle( handle ) {}
+	OrgTreeDocNodeHandle( COrgCtrlDataItem * node ) : m_node( node ) {}
 	virtual ~OrgTreeDocNodeHandle() = default;
 
 	bool IsValid() const {
-		return m_handle != INVALID_NODE_HANDLE;
-	}
-
-	void SetHandle( ULONG64 handle ) {
-		m_handle = handle;
-	}
-	ULONG64 GetHandle() const {
-		return m_handle;
+		return m_node != NULL;
 	}
 
 };
@@ -94,7 +87,7 @@ protected:
 
 	COrgCtrlData::ptr_t m_data;
 
-	void GetNodeHandle( const COrgCtrlDataItem * node, POrgTreeDocNodeHandle & phNode ) const;
+	void GetNodeHandle( COrgCtrlDataItem * node, POrgTreeDocNodeHandle & phNode ) const;
 	static bool FromNodeHandle( const POrgTreeDocNodeHandle & phNode, COrgCtrlDataItem * & node );
 
 	// Generated message map functions
