@@ -65,6 +65,10 @@ CRect COrgCtrlView::ToViewRect( const CRect & rcRect, const int iDepth, const in
             rcViewRect = ToNormalViewRect( rcLayoutRect );
             break;
         }
+        case COrgCtrlView::Mode::Gallery:
+        {
+          // TODO
+        }
         default:
         {
             ASSERT( false );

@@ -41,7 +41,11 @@ BEGIN_MESSAGE_MAP(MainFrame, CFrameWndEx)
 	ON_COMMAND( ID_DOWNWARD_TREEVIEW_BUTTON, &MainFrame::OnDownwardOrgTreeViewButton )
 	ON_COMMAND( ID_UPWARD_TREEVIEW_BUTTON, &MainFrame::OnUpwardOrgTreeViewButton )
 	ON_COMMAND( ID_OUTLOOK_TREEVIEW_BUTTON, &MainFrame::OnOutlookOrgTreeViewButton )
-	ON_COMMAND( ID_ADD_BUTTON, &MainFrame::OnAddButton )
+	ON_COMMAND( ID_GALLERY_TREEVIEW_BUTTON, &MainFrame::OnGalleryOrgTreeViewButton )
+	ON_COMMAND( ID_CREATEROOT_BUTTON, &MainFrame::OnCreateRootButton )
+  ON_COMMAND( ID_CREATEDESCENDANT_BUTTON, &MainFrame::OnCreateDescendantButton )
+	ON_COMMAND( ID_CREATESIBLING_BUTTON, &MainFrame::OnCreateSiblingButton )
+	ON_COMMAND( ID_DELETE_BUTTON, &MainFrame::OnDeleteButton )
 END_MESSAGE_MAP()
 
 // MainFrame construction/destruction
@@ -295,11 +299,32 @@ void MainFrame::OnOutlookOrgTreeViewButton() {
 	SetOrgCtrlMode( COrgCtrlView::Mode::Outlook );
 }
 
-void MainFrame::OnAddButton() {
-	OrgTreeDoc * doc = dynamic_cast < OrgTreeDoc * > ( GetActiveDocument() );
-	if ( doc != NULL ) {
-        doc->CreateContextNode( CString(), CString(), 0, 0, 0);
+void MainFrame::OnGalleryOrgTreeViewButton()
+{
+	SetOrgCtrlMode( COrgCtrlView::Mode::Gallery );
+}
+void MainFrame::OnCreateRootButton()
+{
+	OrgTreeDoc* doc = dynamic_cast < OrgTreeDoc* > ( GetActiveDocument() );
+	if( doc != NULL )
+	{
+		doc->CreateContextNode( CString(), CString(), 0, 0, 0 );
 	}
+}
+
+void MainFrame::OnCreateDescendantButton()
+{
+
+}
+
+void MainFrame::OnCreateSiblingButton()
+{
+}
+
+void MainFrame::OnDeleteButton()
+{
+
+}
 
 	// CreateMainFrameContextNodeGridRow( const CString& uniqueAggregateNodeId, const CString& productionRuleString, DWORD parentCxNodeObjId, DWORD cxNodeObjId, DWORD cxNodeThreadId )
 	// uniqueAggregateNodeId = L"Boy@c0:627e:7f00:d5:d430:ef2d:23bd:26f0#57895#23", productionRuleString = L"( Wife? & Parents & Children* ) | CDATA )", parentCxNodeObjId = 0, cxNodeObjId = 1193322685, cxNodeThreadId = 75716
@@ -307,4 +332,3 @@ void MainFrame::OnAddButton() {
 	// uniqueAggregateNodeId = L"Children@c0:627e:7f00:e1:7cbf:f6cc:110a:d94e#60760#23", productionRuleString = L"CDATA", parentCxNodeObjId = 1193322685, cxNodeObjId = 700228782, cxNodeThreadId = 116612
 	// (see 'boy dtd grid.png' for how it looked in the prototype)
   // (see 'Boy.dtd' which is the DTD that generated the above data)
-}

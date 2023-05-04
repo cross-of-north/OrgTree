@@ -69,7 +69,11 @@ public:
 	afx_msg void OnDownwardOrgTreeViewButton();
 	afx_msg void OnUpwardOrgTreeViewButton();
 	afx_msg void OnOutlookOrgTreeViewButton();
-	afx_msg void OnAddButton();
+	afx_msg void OnGalleryOrgTreeViewButton();
+	afx_msg void OnCreateRootButton();
+	afx_msg void OnCreateDescendantButton();
+	afx_msg void OnCreateSiblingButton();
+	afx_msg void OnDeleteButton();
 };
 
 

@@ -7,6 +7,7 @@ public:
         Tree,
         UpsideDownTree,
         Outlook,
+        Gallery,
     } Mode;
 protected:
     float m_fZoomRatio{ 1 };
