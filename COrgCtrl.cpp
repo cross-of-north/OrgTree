@@ -145,14 +145,16 @@ const POrgTreeDocNodeHandle COrgCtrl::GetFocusedNode( const POrgTreeDocNodeHandl
 void COrgCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
 {
     m_bDragging=FALSE;
-    if ( point == m_ptMouseDownPoint ) {
+    if ( true || point == m_ptMouseDownPoint ) {
         POrgTreeDocNodeHandle phNode = HitTest( point );
-        if ( phNode ) {
-            //ClearFocus();
+        if ( phNode || point == m_ptMouseDownPoint ) {
             POrgTreeDocNodeHandle phOldNode = GetFocusedNode();
             if ( phOldNode ) {
                 m_document->SetNodeFocus( phOldNode, false );
+                Invalidate();
             }
+        }
+        if ( phNode ) {
             m_document->SetNodeFocus( phNode, true );
             Invalidate();
         }

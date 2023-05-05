@@ -15,14 +15,14 @@ void COrgCtrlDataItem::ResetOrderHints() {
 
 void COrgCtrlDataItem::AddChild( const ptr_t & pChild ) {
     m_children.push_back( pChild );
-    pChild->SetParent( shared_from_this() );
+    pChild->SetParent( this );
     ResetOrderHints();
 }
 
 void COrgCtrlDataItem::Clear() {
     ResetOrderHints();
     for ( auto it: m_children ) {
-        it->m_pParent.reset();
+        it->SetParent( nullptr );
         it->Delete();
     }
     m_children.clear();
@@ -36,8 +36,9 @@ void COrgCtrlDataItem::RemoveChild( ptr_t & pChild ) {
 }
 
 void COrgCtrlDataItem::Delete() {
+    auto locked_this = shared_from_this();
     if ( m_pParent ) {
-        m_pParent->RemoveChild( shared_from_this() );
+        m_pParent->RemoveChild( locked_this );
     }
     m_iOrderHint = COrgCtrlDataItem::INVALID_ORDER_HINT;
     m_rcRect.SetRectEmpty();

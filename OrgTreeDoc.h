@@ -101,8 +101,8 @@ protected:
 
 	COrgCtrlData::ptr_t m_data;
 
-	void GetNodeHandle( const COrgCtrlDataItem::ptr_t & node, POrgTreeDocNodeHandle & phNode ) const;
-	static bool FromNodeHandle( const POrgTreeDocNodeHandle & phNode, COrgCtrlDataItem::ptr_t & node );
+	void GetNodeHandle( COrgCtrlDataItem * node, POrgTreeDocNodeHandle & phNode ) const;
+	static bool FromNodeHandle( const POrgTreeDocNodeHandle & phNode, COrgCtrlDataItem * & node );
 
 	// Generated message map functions
 protected:

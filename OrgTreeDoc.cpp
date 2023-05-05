@@ -47,10 +47,10 @@ OrgTreeDoc::~OrgTreeDoc()
 }
 
 // until layout is implemented, we use fixed parameters
-#define NODE_WIDTH 20
-#define NODE_HEIGHT 10
-#define NODE_HSPACE 20
-#define NODE_VSPACE 20
+#define NODE_WIDTH 40
+#define NODE_HEIGHT 20
+#define NODE_HSPACE 40
+#define NODE_VSPACE 40
 
 void OrgTreeDoc::FillByTestData() {
 	#define STARTX 50
@@ -94,16 +94,16 @@ void OrgTreeDoc::FillByTestData() {
 	node2->AddChild( node5 );
 	pRoot->AddChild( node3 );
 
-	m_data->GetRoot()->Clear();
-	m_data->GetRoot()->AddChild( pRoot );
+	m_data->GetRoot().Clear();
+	m_data->GetRoot().AddChild( pRoot );
 }
 
 
-void OrgTreeDoc::GetNodeHandle( const COrgCtrlDataItem::ptr_t & node, POrgTreeDocNodeHandle & phNode ) const {
+void OrgTreeDoc::GetNodeHandle( COrgCtrlDataItem * node, POrgTreeDocNodeHandle & phNode ) const {
 	phNode = std::make_shared< OrgTreeDocNodeHandle >( node );
 }
 
-bool OrgTreeDoc::FromNodeHandle( const POrgTreeDocNodeHandle & phNode, COrgCtrlDataItem::ptr_t & node ) {
+bool OrgTreeDoc::FromNodeHandle( const POrgTreeDocNodeHandle & phNode, COrgCtrlDataItem * & node ) {
 	node = NULL;
 	if ( phNode ) {
 		const OrgTreeDocNodeHandle & hNode = static_cast < const OrgTreeDocNodeHandle & > ( *phNode );
@@ -195,6 +195,7 @@ const CRect OrgTreeDoc::GetNodeRect( const POrgTreeDocNodeHandle & phNode ) cons
 void OrgTreeDoc::DeleteNode( POrgTreeDocNodeHandle & phNode ) {
 	COrgCtrlDataItem * node = NULL;
 	if ( FromNodeHandle( phNode, node ) ) {
+		phNode.reset();
 		node->Delete();
 	}
 	ASSERT( node != NULL );
@@ -308,7 +309,9 @@ OrgTreeView * OrgTreeDoc::GetView() const {
 bool OrgTreeDoc::CreateContextNode( const CString & uniqueAggregateNodeId, const CString & productionRuleString, ULONG64 parentCxNodeObjId, ULONG64 cxNodeObjId, DWORD cxNodeThreadId ) {
 	m_data->GetRoot().Clear();
 	COrgCtrlDataItem::ptr_t pNode = std::make_shared< COrgCtrlDataItem >();
-	pNode->GetRect() = { 0, 0, 20, 10 };
+	int left = STARTX;
+	int top = STARTY;
+	pNode->GetRect() = NODE_RECT;
 	m_data->GetRoot().AddChild( pNode );
 	if ( OrgTreeView * pView = GetView() ) {
 		pView->Invalidate();
@@ -352,7 +355,11 @@ void OrgTreeDoc::CreateSiblingNode( void ) {
 		POrgTreeDocNodeHandle sibling = pView->GetOrgCtrl().GetFocusedNode();
 		if ( sibling ) {
 			POrgTreeDocNodeHandle parent;
-			if ( GetParentNode( sibling, parent ) ) {
+			POrgTreeDocNodeHandle parent_of_parent;
+			if (
+				GetParentNode( sibling, parent ) &&
+				GetParentNode( parent, parent_of_parent ) // shouldn't create second root node
+			) {
                 CreateDescendantNode( parent );
             }
 		}
@@ -364,6 +371,7 @@ void OrgTreeDoc::DeleteNode() {
 		POrgTreeDocNodeHandle node = pView->GetOrgCtrl().GetFocusedNode();
 		if ( node ) {
 			DeleteNode( node );
+			pView->Invalidate();
 		}
 	}
 }
