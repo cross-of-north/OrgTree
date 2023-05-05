@@ -14,6 +14,7 @@ protected:
     CRect m_rcScreenRect;
     bool m_bFocus{ false };
     int m_iOrderHint{ COrgCtrlDataItem::INVALID_ORDER_HINT };
+    void ResetOrderHints();
 public:
     COrgCtrlDataItem() = default;
     const array_t & GetChildren() const { return m_children; }
@@ -27,13 +28,10 @@ public:
     const COrgCtrlDataItem * GetParent() const { return m_pParent; }
     COrgCtrlDataItem * GetParent() { return m_pParent; }
     void SetParent( COrgCtrlDataItem * pParent ) { m_pParent = pParent; }
-    void AddChild( const ptr_t & pChild ) {
-        m_children.push_back( pChild );
-        pChild->SetParent( this );
-    }
-    void Clear() {
-        m_children.clear();
-    }
+    void AddChild( const ptr_t & pChild );
+    void RemoveChild( ptr_t & pChild );
+    void Delete();
+    void Clear();
     int GetOrderHint() const { return m_iOrderHint; }
     void SetOrderHint( const int iOrderHint ) { m_iOrderHint = iOrderHint; }
 

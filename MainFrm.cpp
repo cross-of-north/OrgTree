@@ -318,20 +318,22 @@ void MainFrame::OnCreateRootButton()
 void MainFrame::OnCreateDescendantButton()
 {
 	if ( OrgTreeDoc * doc = GetDocument() ) {
-		doc->CreateDescendant();
+		doc->CreateDescendantNode();
 	}
 }
 
 void MainFrame::OnCreateSiblingButton()
 {
 	if ( OrgTreeDoc * doc = GetDocument() ) {
-		doc->CreateSibling();
+		doc->CreateSiblingNode();
 	}
 }
 
 void MainFrame::OnDeleteButton()
 {
-
+	if ( OrgTreeDoc * doc = GetDocument() ) {
+		doc->DeleteNode();
+	}
 }
 
 	// CreateMainFrameContextNodeGridRow( const CString& uniqueAggregateNodeId, const CString& productionRuleString, DWORD parentCxNodeObjId, DWORD cxNodeObjId, DWORD cxNodeThreadId )

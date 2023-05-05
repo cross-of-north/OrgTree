@@ -82,8 +82,8 @@ public:
 	OrgTreeView * GetView() const;
 
 	bool CreateContextNode( const CString & uniqueAggregateNodeId, const CString & productionRuleString, ULONG64 parentCxNodeObjId, ULONG64 cxNodeObjId, DWORD cxNodeThreadId );
-	void CreateDescendant( const POrgTreeDocNodeHandle & parent = NULL );
-	void CreateSibling( void );
+	void CreateDescendantNode( const POrgTreeDocNodeHandle & parent = NULL );
+	void CreateSiblingNode( void );
 
 	virtual bool GetRootNode( POrgTreeDocNodeHandle & phNode ) const;
 	virtual bool GetNextChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phChild ) const;
@@ -94,6 +94,7 @@ public:
 	virtual bool GetNodeFocus( const POrgTreeDocNodeHandle & phNode ) const;
 	virtual bool GetLastChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phLastChild ) const;
 	virtual bool GetParentNode( const POrgTreeDocNodeHandle & phNode, POrgTreeDocNodeHandle & phParent ) const;
+	virtual void DeleteNode( POrgTreeDocNodeHandle & phNode );
 
 protected:
 

@@ -308,7 +308,7 @@ bool OrgTreeDoc::CreateContextNode( const CString & uniqueAggregateNodeId, const
 	return TRUE;
 }
 
-void OrgTreeDoc::CreateDescendant( const POrgTreeDocNodeHandle & parent_ ) {
+void OrgTreeDoc::CreateDescendantNode( const POrgTreeDocNodeHandle & parent_ ) {
 	if ( OrgTreeView * pView = GetView() ) {
 		POrgTreeDocNodeHandle parent = parent_;
 		if ( !parent ) {
@@ -339,16 +339,20 @@ void OrgTreeDoc::CreateDescendant( const POrgTreeDocNodeHandle & parent_ ) {
 	}
 }
 
-void OrgTreeDoc::CreateSibling( void ) {
+void OrgTreeDoc::CreateSiblingNode( void ) {
 	if ( OrgTreeView * pView = GetView() ) {
 		POrgTreeDocNodeHandle sibling = pView->GetOrgCtrl().GetFocusedNode();
 		if ( sibling ) {
 			POrgTreeDocNodeHandle parent;
 			if ( GetParentNode( sibling, parent ) ) {
-                CreateDescendant( parent );
+                CreateDescendantNode( parent );
             }
 		}
 	}
+}
+
+void OrgTreeDoc::DeleteNode( POrgTreeDocNodeHandle & phNode ) {
+	????????????????????????
 }
 
 const CRect OrgTreeDoc::GetNodeScreenRect( const POrgTreeDocNodeHandle & phNode ) const {
