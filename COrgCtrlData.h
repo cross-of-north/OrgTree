@@ -8,7 +8,7 @@ public:
     typedef std::vector< ptr_t > array_t;
     static const int INVALID_ORDER_HINT = -1;
 protected:
-    const COrgCtrlDataItem * m_pParent{ nullptr };
+    COrgCtrlDataItem * m_pParent{ nullptr };
     array_t m_children;
     CRect m_rcRect;
     CRect m_rcScreenRect;
@@ -25,7 +25,8 @@ public:
     bool GetFocus() const { return m_bFocus; }
     void SetFocus( const bool bFocus ) { m_bFocus = bFocus; }
     const COrgCtrlDataItem * GetParent() const { return m_pParent; }
-    void SetParent( const COrgCtrlDataItem * pParent ) { m_pParent = pParent; }
+    COrgCtrlDataItem * GetParent() { return m_pParent; }
+    void SetParent( COrgCtrlDataItem * pParent ) { m_pParent = pParent; }
     void AddChild( const ptr_t & pChild ) {
         m_children.push_back( pChild );
         pChild->SetParent( this );

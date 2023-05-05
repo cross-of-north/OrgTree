@@ -324,6 +324,9 @@ void MainFrame::OnCreateDescendantButton()
 
 void MainFrame::OnCreateSiblingButton()
 {
+	if ( OrgTreeDoc * doc = GetDocument() ) {
+		doc->CreateSibling();
+	}
 }
 
 void MainFrame::OnDeleteButton()

@@ -173,6 +173,18 @@ bool OrgTreeDoc::GetLastChildNode( const POrgTreeDocNodeHandle & phParent, POrgT
 	return phLastChild && ( static_cast < OrgTreeDocNodeHandle & > ( *phLastChild ) ).IsValid();
 }
 
+bool OrgTreeDoc::GetParentNode( const POrgTreeDocNodeHandle & phNode, POrgTreeDocNodeHandle & phParent ) const {
+	phParent = NULL;
+	COrgCtrlDataItem * node = NULL;
+	if ( FromNodeHandle( phNode, node ) ) {
+		COrgCtrlDataItem * parent = node->GetParent();
+		if ( parent != NULL ) {
+			GetNodeHandle( parent, phParent );
+		}
+	}
+	return phParent && ( static_cast < OrgTreeDocNodeHandle & > ( *phParent ) ).IsValid();
+}
+
 const CRect OrgTreeDoc::GetNodeRect( const POrgTreeDocNodeHandle & phNode ) const {
 	COrgCtrlDataItem * node = NULL;
 	FromNodeHandle( phNode, node );
@@ -296,10 +308,12 @@ bool OrgTreeDoc::CreateContextNode( const CString & uniqueAggregateNodeId, const
 	return TRUE;
 }
 
-void OrgTreeDoc::CreateDescendant( void ) {
+void OrgTreeDoc::CreateDescendant( const POrgTreeDocNodeHandle & parent_ ) {
 	if ( OrgTreeView * pView = GetView() ) {
-		COrgCtrl & ctrl = pView->GetOrgCtrl();
-		POrgTreeDocNodeHandle parent = ctrl.GetFocusedNode();
+		POrgTreeDocNodeHandle parent = parent_;
+		if ( !parent ) {
+			parent = pView->GetOrgCtrl().GetFocusedNode();
+		}
 		if ( parent ) {
 			const CRect & parentRect = GetNodeRect( parent );
 			int left = parentRect.right + NODE_HSPACE;
@@ -321,6 +335,18 @@ void OrgTreeDoc::CreateDescendant( void ) {
 				pParentImpl->AddChild( pNode );
 			}
 			pView->Invalidate();
+		}
+	}
+}
+
+void OrgTreeDoc::CreateSibling( void ) {
+	if ( OrgTreeView * pView = GetView() ) {
+		POrgTreeDocNodeHandle sibling = pView->GetOrgCtrl().GetFocusedNode();
+		if ( sibling ) {
+			POrgTreeDocNodeHandle parent;
+			if ( GetParentNode( sibling, parent ) ) {
+                CreateDescendant( parent );
+            }
 		}
 	}
 }
