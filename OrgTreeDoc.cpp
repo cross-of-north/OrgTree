@@ -94,16 +94,16 @@ void OrgTreeDoc::FillByTestData() {
 	node2->AddChild( node5 );
 	pRoot->AddChild( node3 );
 
-	m_data->GetRoot().Clear();
-	m_data->GetRoot().AddChild( pRoot );
+	m_data->GetRoot()->Clear();
+	m_data->GetRoot()->AddChild( pRoot );
 }
 
 
-void OrgTreeDoc::GetNodeHandle( COrgCtrlDataItem * node, POrgTreeDocNodeHandle & phNode ) const {
+void OrgTreeDoc::GetNodeHandle( const COrgCtrlDataItem::ptr_t & node, POrgTreeDocNodeHandle & phNode ) const {
 	phNode = std::make_shared< OrgTreeDocNodeHandle >( node );
 }
 
-bool OrgTreeDoc::FromNodeHandle( const POrgTreeDocNodeHandle & phNode, COrgCtrlDataItem * & node ) {
+bool OrgTreeDoc::FromNodeHandle( const POrgTreeDocNodeHandle & phNode, COrgCtrlDataItem::ptr_t & node ) {
 	node = NULL;
 	if ( phNode ) {
 		const OrgTreeDocNodeHandle & hNode = static_cast < const OrgTreeDocNodeHandle & > ( *phNode );
@@ -190,6 +190,14 @@ const CRect OrgTreeDoc::GetNodeRect( const POrgTreeDocNodeHandle & phNode ) cons
 	FromNodeHandle( phNode, node );
 	ASSERT( node != NULL );
 	return node == NULL ? CRect() : node->GetRect();
+}
+
+void OrgTreeDoc::DeleteNode( POrgTreeDocNodeHandle & phNode ) {
+	COrgCtrlDataItem * node = NULL;
+	if ( FromNodeHandle( phNode, node ) ) {
+		node->Delete();
+	}
+	ASSERT( node != NULL );
 }
 
 BOOL OrgTreeDoc::OnNewDocument()
@@ -351,8 +359,13 @@ void OrgTreeDoc::CreateSiblingNode( void ) {
 	}
 }
 
-void OrgTreeDoc::DeleteNode( POrgTreeDocNodeHandle & phNode ) {
-	????????????????????????
+void OrgTreeDoc::DeleteNode() {
+	if ( OrgTreeView * pView = GetView() ) {
+		POrgTreeDocNodeHandle node = pView->GetOrgCtrl().GetFocusedNode();
+		if ( node ) {
+			DeleteNode( node );
+		}
+	}
 }
 
 const CRect OrgTreeDoc::GetNodeScreenRect( const POrgTreeDocNodeHandle & phNode ) const {
