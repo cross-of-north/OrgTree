@@ -54,7 +54,6 @@ private:
 	bool ValidateRecursiveNode( POrgTreeDocNodeHandle & phNode ) const;
 	const POrgTreeDocNodeHandle HitTest( const CPoint & point, const POrgTreeDocNodeHandle & phNode = NULL ) const;
 	void ClearFocus( const POrgTreeDocNodeHandle & phNode = NULL );
-	const POrgTreeDocNodeHandle GetFocusedNode( const POrgTreeDocNodeHandle & phNode = NULL ) const;
 
 public:
 	afx_msg void OnPaint();
@@ -66,4 +65,5 @@ public:
 	void SetDocument( const IOrgTreeDoc * document );
 	const IOrgTreeDoc * GetDocument() { return m_document; }
 	COrgCtrlView & GetView() { return m_view; }
+	const POrgTreeDocNodeHandle GetFocusedNode( const POrgTreeDocNodeHandle & phNode = NULL ) const;
 };

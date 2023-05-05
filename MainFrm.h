@@ -17,6 +17,8 @@
 #include "COrgCtrl.h"
 
 
+class OrgTreeDoc;
+
 class MainFrame : public CFrameWndEx
 {
 	
@@ -50,6 +52,7 @@ protected:  // control bar embedded members
 	CPropertiesWnd    m_wndProperties;
 
 	COrgCtrl * GetOrgCtrl() const;
+	OrgTreeDoc * GetDocument();
 
 // Generated message map functions
 protected:

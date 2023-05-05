@@ -46,6 +46,8 @@ public:
 };
 
 
+class OrgTreeView;
+
 class OrgTreeDoc : public CDocument, public IOrgTreeDoc
 {
 protected: // create from serialization only
@@ -77,7 +79,10 @@ public:
 	void FillByTestData();
 	COrgCtrlData::ptr_t GetData() { return m_data; }
 
+	OrgTreeView * GetView() const;
+
 	bool CreateContextNode( const CString & uniqueAggregateNodeId, const CString & productionRuleString, ULONG64 parentCxNodeObjId, ULONG64 cxNodeObjId, DWORD cxNodeThreadId );
+	void CreateDescendant( void );
 
 	virtual bool GetRootNode( POrgTreeDocNodeHandle & phNode ) const;
 	virtual bool GetNextChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phChild ) const;
@@ -86,6 +91,7 @@ public:
 	virtual void SetNodeScreenRect( const POrgTreeDocNodeHandle & phNode, const CRect & rect ) const;
 	virtual void SetNodeFocus( const POrgTreeDocNodeHandle & phNode, const bool bFocus ) const;
 	virtual bool GetNodeFocus( const POrgTreeDocNodeHandle & phNode ) const;
+	virtual bool GetLastChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phLastChild ) const;
 
 protected:
 

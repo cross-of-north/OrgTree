@@ -22,4 +22,5 @@ public:
     virtual void SetNodeScreenRect( const POrgTreeDocNodeHandle & phNode, const CRect & rect ) const = 0;
     virtual void SetNodeFocus( const POrgTreeDocNodeHandle & phNode, const bool bFocus ) const = 0;
     virtual bool GetNodeFocus( const POrgTreeDocNodeHandle & phNode ) const = 0;
+    virtual bool GetLastChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phChild ) const = 0;
 };

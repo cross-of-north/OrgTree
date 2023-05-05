@@ -303,18 +303,23 @@ void MainFrame::OnGalleryOrgTreeViewButton()
 {
 	SetOrgCtrlMode( COrgCtrlView::Mode::Gallery );
 }
+
+OrgTreeDoc * MainFrame::GetDocument() {
+	return dynamic_cast < OrgTreeDoc * > ( GetActiveDocument() );
+}
+
 void MainFrame::OnCreateRootButton()
 {
-	OrgTreeDoc* doc = dynamic_cast < OrgTreeDoc* > ( GetActiveDocument() );
-	if( doc != NULL )
-	{
+	if ( OrgTreeDoc * doc = GetDocument() )	{
 		doc->CreateContextNode( CString(), CString(), 0, 0, 0 );
 	}
 }
 
 void MainFrame::OnCreateDescendantButton()
 {
-
+	if ( OrgTreeDoc * doc = GetDocument() ) {
+		doc->CreateDescendant();
+	}
 }
 
 void MainFrame::OnCreateSiblingButton()

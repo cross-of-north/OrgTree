@@ -46,19 +46,48 @@ OrgTreeDoc::~OrgTreeDoc()
 {
 }
 
+// until layout is implemented, we use fixed parameters
+#define NODE_WIDTH 20
+#define NODE_HEIGHT 10
+#define NODE_HSPACE 20
+#define NODE_VSPACE 20
+
 void OrgTreeDoc::FillByTestData() {
+	#define STARTX 50
+	#define STARTY 50
+	int left = STARTX;
+	int top = STARTY;
+	#define NODE_RECT { left, top, left + NODE_WIDTH, top + NODE_HEIGHT }
+	
 	COrgCtrlDataItem::ptr_t pRoot = std::make_shared< COrgCtrlDataItem >();
-	pRoot->GetRect() = { 50, 50, 70, 60 };
+	pRoot->GetRect() = NODE_RECT;
+
+	left += NODE_WIDTH + NODE_HSPACE;
+	top = 10;
+
 	COrgCtrlDataItem::ptr_t node1 = std::make_shared< COrgCtrlDataItem >();
-	node1->GetRect() = { 80, 10, 100, 20 };
+	node1->GetRect() = NODE_RECT;
+	top += NODE_HEIGHT + NODE_VSPACE;
+
 	COrgCtrlDataItem::ptr_t node2 = std::make_shared< COrgCtrlDataItem >();
-	node2->GetRect() = { 80, 40, 100, 50 };
+	node2->GetRect() = NODE_RECT;
+	top += NODE_HEIGHT + NODE_VSPACE;
+
 	COrgCtrlDataItem::ptr_t node3 = std::make_shared< COrgCtrlDataItem >();
-	node3->GetRect() = { 80, 70, 100, 80 };
+	node3->GetRect() = NODE_RECT;
+	top += NODE_HEIGHT + NODE_VSPACE;
+
+	left += NODE_WIDTH + NODE_HSPACE;
+	top = top/2;
+
 	COrgCtrlDataItem::ptr_t node4 = std::make_shared< COrgCtrlDataItem >();
-	node4->GetRect() = { 110, 60, 130, 70 };
+	node4->GetRect() = NODE_RECT;
+	top += NODE_HEIGHT + NODE_VSPACE;
+
 	COrgCtrlDataItem::ptr_t node5 = std::make_shared< COrgCtrlDataItem >();
-	node5->GetRect() = { 110, 90, 130, 100 };
+	node5->GetRect() = NODE_RECT;
+	top += NODE_HEIGHT + NODE_VSPACE;
+
 	pRoot->AddChild( node1 );
 	pRoot->AddChild( node2 );
 	node2->AddChild( node4 );
@@ -125,6 +154,23 @@ bool OrgTreeDoc::GetNextChildNode( const POrgTreeDocNodeHandle & phParent, POrgT
 	phChild = phNextChild;
 
 	return phChild && ( static_cast < OrgTreeDocNodeHandle & > ( *phChild ) ).IsValid();
+}
+
+bool OrgTreeDoc::GetLastChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phLastChild ) const {
+
+	phLastChild = NULL;
+
+	COrgCtrlDataItem * parent = NULL;
+	if ( FromNodeHandle( phParent, parent ) ) {
+		auto children = parent->GetChildren();
+		if ( children.size() > 0 ) {
+			auto child = children[ children.size() - 1 ];
+			child->SetOrderHint( int( children.size() - 1 ) );
+			GetNodeHandle( child.get(), phLastChild );
+		}
+	}
+
+	return phLastChild && ( static_cast < OrgTreeDocNodeHandle & > ( *phLastChild ) ).IsValid();
 }
 
 const CRect OrgTreeDoc::GetNodeRect( const POrgTreeDocNodeHandle & phNode ) const {
@@ -230,20 +276,53 @@ void OrgTreeDoc::Dump(CDumpContext& dc) const
 }
 #endif //_DEBUG
 
+OrgTreeView * OrgTreeDoc::GetView() const {
+	OrgTreeView * pView = NULL;
+	POSITION pos = GetFirstViewPosition();
+	if ( pos != NULL ) {
+		pView = dynamic_cast < OrgTreeView * > ( GetNextView( pos ) );
+	}
+	return pView;
+}
+
 bool OrgTreeDoc::CreateContextNode( const CString & uniqueAggregateNodeId, const CString & productionRuleString, ULONG64 parentCxNodeObjId, ULONG64 cxNodeObjId, DWORD cxNodeThreadId ) {
 	m_data->GetRoot().Clear();
 	COrgCtrlDataItem::ptr_t pNode = std::make_shared< COrgCtrlDataItem >();
 	pNode->GetRect() = { 0, 0, 20, 10 };
 	m_data->GetRoot().AddChild( pNode );
-	OrgTreeView * pView = NULL;
-	POSITION pos = GetFirstViewPosition();
-	if ( pos != NULL ) {
-		pView = dynamic_cast < OrgTreeView * > ( GetNextView( pos ) );
-		if ( pView != NULL ) {
+	if ( OrgTreeView * pView = GetView() ) {
+		pView->Invalidate();
+	}
+	return TRUE;
+}
+
+void OrgTreeDoc::CreateDescendant( void ) {
+	if ( OrgTreeView * pView = GetView() ) {
+		COrgCtrl & ctrl = pView->GetOrgCtrl();
+		POrgTreeDocNodeHandle parent = ctrl.GetFocusedNode();
+		if ( parent ) {
+			const CRect & parentRect = GetNodeRect( parent );
+			int left = parentRect.right + NODE_HSPACE;
+			int top = parentRect.top;
+			POrgTreeDocNodeHandle prev_sibling;
+			if ( GetLastChildNode( parent, prev_sibling ) ) {
+				const CRect & prevSiblingRect = GetNodeRect( prev_sibling );
+				top = prevSiblingRect.bottom + NODE_VSPACE;
+			}
+            COrgCtrlDataItem::ptr_t pNode = std::make_shared< COrgCtrlDataItem >();
+            pNode->GetRect() = {
+				left,
+				top,
+				left + NODE_WIDTH,
+				top + NODE_HEIGHT
+			};
+			COrgCtrlDataItem * pParentImpl = NULL;
+			if ( FromNodeHandle( parent, pParentImpl ) ) {
+				pParentImpl->AddChild( pNode );
+			}
 			pView->Invalidate();
 		}
 	}
-	return TRUE;
 }
 
 const CRect OrgTreeDoc::GetNodeScreenRect( const POrgTreeDocNodeHandle & phNode ) const {
