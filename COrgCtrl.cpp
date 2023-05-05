@@ -83,10 +83,81 @@ int COrgCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
   return 0;
 }
 
+bool COrgCtrl::ValidateRecursiveNode( POrgTreeDocNodeHandle & phNode ) const {
+    if ( !phNode ) {
+        POrgTreeDocNodeHandle phRootNode;
+        if ( m_document->GetRootNode( phRootNode ) ) {
+            m_document->GetNextChildNode( phRootNode, phNode );
+        }
+    }
+    return !!phNode;
+}
+
+const POrgTreeDocNodeHandle COrgCtrl::HitTest( const CPoint & point, const POrgTreeDocNodeHandle & phNode_ ) const {
+    POrgTreeDocNodeHandle result;
+    POrgTreeDocNodeHandle phNode = phNode_;
+    if ( ValidateRecursiveNode( phNode ) ) {
+        if ( m_document->GetNodeScreenRect( phNode ).PtInRect( point ) ) {
+            result = phNode;
+        } else {
+            POrgTreeDocNodeHandle phChildNode;
+            while ( m_document->GetNextChildNode( phNode, phChildNode ) ) {
+                result = HitTest( point, phChildNode );
+                if ( result ) {
+                    break;
+                }
+            }
+        }
+    }
+    return result;
+}
+
+void COrgCtrl::ClearFocus( const POrgTreeDocNodeHandle & phNode_ ) {
+    POrgTreeDocNodeHandle phNode = phNode_;
+    if ( ValidateRecursiveNode( phNode ) ) {
+        m_document->SetNodeFocus( phNode, false );
+        POrgTreeDocNodeHandle phChildNode;
+        while ( m_document->GetNextChildNode( phNode, phChildNode ) ) {
+            ClearFocus( phChildNode );
+        }
+    }
+}
+
+const POrgTreeDocNodeHandle COrgCtrl::GetFocusedNode( const POrgTreeDocNodeHandle & phNode_ ) const {
+    POrgTreeDocNodeHandle result;
+    POrgTreeDocNodeHandle phNode = phNode_;
+    if ( ValidateRecursiveNode( phNode ) ) {
+        if ( m_document->GetNodeFocus( phNode ) ) {
+            result = phNode;
+        } else {
+            POrgTreeDocNodeHandle phChildNode;
+            while ( m_document->GetNextChildNode( phNode, phChildNode ) ) {
+                result = GetFocusedNode( phChildNode );
+                if ( result ) {
+                    break;
+                }
+            }
+        }
+    }
+    return result;
+}
+
 void COrgCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
 {
-  m_bDragging=FALSE;
-  //CWnd::OnLButtonUp(nFlags, point);
+    m_bDragging=FALSE;
+    if ( point == m_ptMouseDownPoint ) {
+        POrgTreeDocNodeHandle phNode = HitTest( point );
+        if ( phNode ) {
+            //ClearFocus();
+            POrgTreeDocNodeHandle phOldNode = GetFocusedNode();
+            if ( phOldNode ) {
+                m_document->SetNodeFocus( phOldNode, false );
+            }
+            m_document->SetNodeFocus( phNode, true );
+            Invalidate();
+        }
+    }
+    //CWnd::OnLButtonUp(nFlags, point);
 }
 
 void COrgCtrl::OnPaint() {
@@ -164,6 +235,7 @@ BOOL COrgCtrl::OnMouseWheel( UINT nFlags, short zDelta, CPoint pt ) {
 
 void COrgCtrl::OnLButtonDown( UINT nFlags, CPoint point ) {
     if ( m_bDragging == FALSE ) {
+        m_ptMouseDownPoint = point;
         m_ptPrevDragPoint = point;
         m_bDragging = TRUE;
     }

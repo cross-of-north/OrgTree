@@ -246,4 +246,34 @@ bool OrgTreeDoc::CreateContextNode( const CString & uniqueAggregateNodeId, const
 	return TRUE;
 }
 
+const CRect OrgTreeDoc::GetNodeScreenRect( const POrgTreeDocNodeHandle & phNode ) const {
+	COrgCtrlDataItem * node = NULL;
+	FromNodeHandle( phNode, node );
+	ASSERT( node != NULL );
+	return node == NULL ? CRect() : node->GetScreenRect();
+}
+
+void OrgTreeDoc::SetNodeScreenRect( const POrgTreeDocNodeHandle & phNode, const CRect & rect ) const {
+	COrgCtrlDataItem * node = NULL;
+	if ( FromNodeHandle( phNode, node ) ) {
+        node->GetScreenRect() = rect;
+    }
+	ASSERT( node != NULL );
+}
+
+void OrgTreeDoc::SetNodeFocus( const POrgTreeDocNodeHandle & phNode, const bool bFocus ) const {
+	COrgCtrlDataItem * node = NULL;
+	if ( FromNodeHandle( phNode, node ) ) {
+		node->SetFocus( bFocus );
+	}
+	ASSERT( node != NULL );
+}
+
+bool OrgTreeDoc::GetNodeFocus( const POrgTreeDocNodeHandle & phNode ) const {
+	COrgCtrlDataItem * node = NULL;
+	FromNodeHandle( phNode, node );
+	ASSERT( node != NULL );
+	return node == NULL ? CRect() : node->GetFocus();
+}
+
 // OrgTreeDoc commands

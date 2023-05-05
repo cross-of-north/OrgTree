@@ -82,6 +82,10 @@ public:
 	virtual bool GetRootNode( POrgTreeDocNodeHandle & phNode ) const;
 	virtual bool GetNextChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phChild ) const;
 	virtual const CRect GetNodeRect( const POrgTreeDocNodeHandle & phNode ) const;
+	virtual const CRect GetNodeScreenRect( const POrgTreeDocNodeHandle & phNode ) const;
+	virtual void SetNodeScreenRect( const POrgTreeDocNodeHandle & phNode, const CRect & rect ) const;
+	virtual void SetNodeFocus( const POrgTreeDocNodeHandle & phNode, const bool bFocus ) const;
+	virtual bool GetNodeFocus( const POrgTreeDocNodeHandle & phNode ) const;
 
 protected:
 

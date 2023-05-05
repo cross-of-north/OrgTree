@@ -12,6 +12,7 @@ protected:
     CRect m_rcDataBorders;
     void MeasureNode( const POrgTreeDocNodeHandle & phNode );
     void PaintNode( const POrgTreeDocNodeHandle & phNode, const int iDepth, const int iOrder, int & iCount );
+    void SetupNodePainting( const bool bFocused );
 public:
     COrgCtrlPainter( CDC & dc, const CRect & rcClient, const IOrgTreeDoc & document, const COrgCtrlView & view );
     void Paint( void );

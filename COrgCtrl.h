@@ -37,10 +37,12 @@ protected:
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+
 private:
 	BOOL RegisterWndClass();
 
 	CPoint m_ptPrevDragPoint;
+	CPoint m_ptMouseDownPoint;
 	BOOL m_bDragging{ FALSE };
 	UINT_PTR m_nTimerID{ 0 };
 	BOOL m_bInvalidate{ FALSE };
@@ -49,6 +51,10 @@ private:
 
 	float GetZoomRatio() const;
 	void SetZoomRatio( float fZoomRatio, const CPoint & ptCenter = {} );
+	bool ValidateRecursiveNode( POrgTreeDocNodeHandle & phNode ) const;
+	const POrgTreeDocNodeHandle HitTest( const CPoint & point, const POrgTreeDocNodeHandle & phNode = NULL ) const;
+	void ClearFocus( const POrgTreeDocNodeHandle & phNode = NULL );
+	const POrgTreeDocNodeHandle GetFocusedNode( const POrgTreeDocNodeHandle & phNode = NULL ) const;
 
 public:
 	afx_msg void OnPaint();

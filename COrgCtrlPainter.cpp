@@ -12,11 +12,21 @@ COrgCtrlPainter::COrgCtrlPainter( CDC & dc, const CRect & rcClient, const IOrgTr
 {
 }       
 
+void COrgCtrlPainter::SetupNodePainting( const bool bFocused ) {
+    if ( bFocused ) {
+        m_dc.SetDCPenColor( RGB( 0xC0, 0xC0, 0xC0 ) );
+    } else {
+        m_dc.SetDCPenColor( RGB( 0, 0, 0 ) );
+    }
+}
+
 void COrgCtrlPainter::Paint( void ) {
+
     m_dc.SetDCBrushColor( RGB( 255, 255, 255 ) );
     m_dc.SetDCPenColor( RGB( 255, 255, 255 ) );
     m_dc.FillSolidRect( m_rcClient, RGB( 255, 255, 255 ) );
-    m_dc.SetDCPenColor( RGB( 0, 0, 0 ) );
+
+    SetupNodePainting( false );
 
     POrgTreeDocNodeHandle phRootNode;
     POrgTreeDocNodeHandle phFirstNode;
@@ -47,7 +57,22 @@ void COrgCtrlPainter::PaintNode( const POrgTreeDocNodeHandle & phNode, const int
         iChildOrder++;
     }
 
-    m_dc.Rectangle( node_rect );
+    m_document.SetNodeScreenRect( phNode, node_rect );
+    if ( m_document.GetNodeFocus( phNode ) ) {
+        SetupNodePainting( true );
+        for ( int i = 2; i > 0; i-- ) {
+            CRect rect = node_rect;
+            rect.TopLeft().x -= i;
+            rect.TopLeft().y -= i;
+            rect.BottomRight().x += i;
+            rect.BottomRight().y += i;
+            m_dc.Rectangle( rect );
+        }
+        SetupNodePainting( false );
+        m_dc.Rectangle( node_rect );
+    } else {
+        m_dc.Rectangle( node_rect );
+    }
 }
 
 void COrgCtrlPainter::MeasureNode( const POrgTreeDocNodeHandle & phNode ) {
