@@ -50,7 +50,7 @@ OrgTreeDoc::~OrgTreeDoc()
 #define NODE_WIDTH 40
 #define NODE_HEIGHT 20
 #define NODE_HSPACE 40
-#define NODE_VSPACE 40
+#define NODE_VSPACE 60
 
 void OrgTreeDoc::FillByTestData() {
 	#define STARTX 50
@@ -75,10 +75,10 @@ void OrgTreeDoc::FillByTestData() {
 
 	COrgCtrlDataItem::ptr_t node3 = std::make_shared< COrgCtrlDataItem >();
 	node3->GetRect() = NODE_RECT;
-	top += NODE_HEIGHT + NODE_VSPACE;
+	//top += NODE_HEIGHT + NODE_VSPACE;
 
 	left += NODE_WIDTH + NODE_HSPACE;
-	top = top/2;
+	//top = top/2;
 
 	COrgCtrlDataItem::ptr_t node4 = std::make_shared< COrgCtrlDataItem >();
 	node4->GetRect() = NODE_RECT;
@@ -333,14 +333,19 @@ void OrgTreeDoc::CreateDescendantNode( const POrgTreeDocNodeHandle & parent_ ) {
 			const CRect & prevSiblingRect = GetNodeRect( prev_sibling );
 			top = prevSiblingRect.bottom + NODE_VSPACE;
 		}
-        COrgCtrlDataItem::ptr_t pNode = std::make_shared< COrgCtrlDataItem >();
+		COrgCtrlDataItem::ptr_t pNode = std::make_shared< COrgCtrlDataItem >();
 		CRect rect = {
 			left,
 			top,
 			left + NODE_WIDTH,
 			top + NODE_HEIGHT
 		};
-        pNode->GetRect() = rect;
+		POrgTreeDocNodeHandle overlapped;
+		bool bScreenCoords = false;
+		while ( HitTest( rect, overlapped, bScreenCoords ) ) {
+			rect.OffsetRect( NODE_WIDTH + NODE_HSPACE, 0 );
+		}
+		pNode->GetRect() = rect;
 		COrgCtrlDataItem * pParentImpl = NULL;
 		if ( FromNodeHandle( parent, pParentImpl ) ) {
 			pParentImpl->AddChild( pNode );
@@ -360,8 +365,8 @@ void OrgTreeDoc::CreateSiblingNode( void ) {
 			GetParentNode( sibling, parent ) &&
 			GetParentNode( parent, parent_of_parent ) // shouldn't create second root node
 		) {
-            CreateDescendantNode( parent );
-        }
+			CreateDescendantNode( parent );
+		}
 	}
 }
 

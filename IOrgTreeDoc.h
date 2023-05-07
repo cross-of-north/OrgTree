@@ -30,7 +30,8 @@ public:
     virtual bool GetParentNode( const POrgTreeDocNodeHandle & phNode, POrgTreeDocNodeHandle & phParent ) const = 0;
     virtual void DeleteNode( POrgTreeDocNodeHandle & phNode ) = 0;
     
-    bool HitTest( const CPoint & point, POrgTreeDocNodeHandle & phHitNode, const POrgTreeDocNodeHandle & phStartNode = NULL ) const;
+    bool HitTest( const CPoint & point, POrgTreeDocNodeHandle & phHitNode, const bool bScreenCoords = true ) const;
+    bool HitTest( const CRect & rect, POrgTreeDocNodeHandle & phHitNode, const bool bScreenCoords = true, const POrgTreeDocNodeHandle & phStartNode = NULL ) const;
     bool GetFocusedNode( POrgTreeDocNodeHandle & phFocusedNode, const POrgTreeDocNodeHandle & phStartNode = NULL ) const;
     void ClearFocus( const POrgTreeDocNodeHandle & phNode = NULL );
 

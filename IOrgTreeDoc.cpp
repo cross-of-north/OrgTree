@@ -12,17 +12,18 @@ bool IOrgTreeDoc::ValidateRecursiveNode( POrgTreeDocNodeHandle & phNode ) const 
 	return !!phNode;
 }
 
-bool IOrgTreeDoc::HitTest( const CPoint & point, POrgTreeDocNodeHandle & phHitNode, const POrgTreeDocNodeHandle & phStartNode ) const {
+bool IOrgTreeDoc::HitTest( const CRect & rect, POrgTreeDocNodeHandle & phHitNode, const bool bScreenCoords, const POrgTreeDocNodeHandle & phStartNode ) const {
 	bool bResult = false;
 	POrgTreeDocNodeHandle phNode = phStartNode;
+	phHitNode.reset();
 	if ( ValidateRecursiveNode( phNode ) ) {
-		if ( GetNodeScreenRect( phNode ).PtInRect( point ) ) {
+		if ( CRect().IntersectRect( bScreenCoords ? GetNodeScreenRect( phNode ) : GetNodeRect( phNode ), rect ) != 0 ) {
 			phHitNode = phNode;
 			bResult = true;
 		} else {
 			POrgTreeDocNodeHandle phChildNode;
 			while ( GetNextChildNode( phNode, phChildNode ) ) {
-				bResult = HitTest( point, phHitNode, phChildNode );
+				bResult = HitTest( rect, phHitNode, bScreenCoords, phChildNode );
 				if ( bResult ) {
 					break;
 				}
@@ -30,6 +31,11 @@ bool IOrgTreeDoc::HitTest( const CPoint & point, POrgTreeDocNodeHandle & phHitNo
 		}
 	}
 	return bResult;
+}
+
+bool IOrgTreeDoc::HitTest( const CPoint & point, POrgTreeDocNodeHandle & phHitNode, const bool bScreenCoords ) const {
+	CRect rect( point.x - 1, point.y - 1, point.x + 1, point.y + 1 );
+	return HitTest( rect, phHitNode );
 }
 
 void IOrgTreeDoc::ClearFocus( const POrgTreeDocNodeHandle & phNode_ ) {
@@ -46,6 +52,7 @@ void IOrgTreeDoc::ClearFocus( const POrgTreeDocNodeHandle & phNode_ ) {
 bool IOrgTreeDoc::GetFocusedNode( POrgTreeDocNodeHandle & phFocusedNode, const POrgTreeDocNodeHandle & phStartNode ) const {
 	bool bResult = false;
 	POrgTreeDocNodeHandle phNode = phStartNode;
+	phFocusedNode.reset();
 	if ( ValidateRecursiveNode( phNode ) ) {
 		if ( GetNodeFocus( phNode ) ) {
 			phFocusedNode = phNode;
