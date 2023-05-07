@@ -204,6 +204,7 @@
     <ClCompile Include="COrgCtrlData.cpp" />
     <ClCompile Include="COrgCtrlPainter.cpp" />
     <ClCompile Include="COrgCtrlView.cpp" />
+    <ClCompile Include="IOrgTreeDoc.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="COrgCtrl.cpp" />
     <ClCompile Include="OrgTreeApp.cpp" />

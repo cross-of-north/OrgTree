@@ -89,6 +89,9 @@
     <ClCompile Include="COrgCtrlPainter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IOrgTreeDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OrgTree.rc">

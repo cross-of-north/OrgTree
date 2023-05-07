@@ -13,6 +13,10 @@ typedef std::shared_ptr < IOrgTreeDocNodeHandle > POrgTreeDocNodeHandle;
 
 class IOrgTreeDoc {
 
+protected:
+
+    bool ValidateRecursiveNode( POrgTreeDocNodeHandle & phNode ) const;
+
 public:
 
     virtual bool GetRootNode( POrgTreeDocNodeHandle & phNode ) const = 0;
@@ -25,4 +29,9 @@ public:
     virtual bool GetLastChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phChild ) const = 0;
     virtual bool GetParentNode( const POrgTreeDocNodeHandle & phNode, POrgTreeDocNodeHandle & phParent ) const = 0;
     virtual void DeleteNode( POrgTreeDocNodeHandle & phNode ) = 0;
+    
+    bool HitTest( const CPoint & point, POrgTreeDocNodeHandle & phHitNode, const POrgTreeDocNodeHandle & phStartNode = NULL ) const;
+    bool GetFocusedNode( POrgTreeDocNodeHandle & phFocusedNode, const POrgTreeDocNodeHandle & phStartNode = NULL ) const;
+    void ClearFocus( const POrgTreeDocNodeHandle & phNode = NULL );
+
 };

@@ -320,57 +320,56 @@ bool OrgTreeDoc::CreateContextNode( const CString & uniqueAggregateNodeId, const
 }
 
 void OrgTreeDoc::CreateDescendantNode( const POrgTreeDocNodeHandle & parent_ ) {
-	if ( OrgTreeView * pView = GetView() ) {
-		POrgTreeDocNodeHandle parent = parent_;
-		if ( !parent ) {
-			parent = pView->GetOrgCtrl().GetFocusedNode();
+	POrgTreeDocNodeHandle parent = parent_;
+	if ( !parent ) {
+		GetFocusedNode( parent );
+	}
+	if ( parent ) {
+		const CRect & parentRect = GetNodeRect( parent );
+		int left = parentRect.right + NODE_HSPACE;
+		int top = parentRect.top;
+		POrgTreeDocNodeHandle prev_sibling;
+		if ( GetLastChildNode( parent, prev_sibling ) ) {
+			const CRect & prevSiblingRect = GetNodeRect( prev_sibling );
+			top = prevSiblingRect.bottom + NODE_VSPACE;
 		}
-		if ( parent ) {
-			const CRect & parentRect = GetNodeRect( parent );
-			int left = parentRect.right + NODE_HSPACE;
-			int top = parentRect.top;
-			POrgTreeDocNodeHandle prev_sibling;
-			if ( GetLastChildNode( parent, prev_sibling ) ) {
-				const CRect & prevSiblingRect = GetNodeRect( prev_sibling );
-				top = prevSiblingRect.bottom + NODE_VSPACE;
-			}
-            COrgCtrlDataItem::ptr_t pNode = std::make_shared< COrgCtrlDataItem >();
-            pNode->GetRect() = {
-				left,
-				top,
-				left + NODE_WIDTH,
-				top + NODE_HEIGHT
-			};
-			COrgCtrlDataItem * pParentImpl = NULL;
-			if ( FromNodeHandle( parent, pParentImpl ) ) {
-				pParentImpl->AddChild( pNode );
-			}
+        COrgCtrlDataItem::ptr_t pNode = std::make_shared< COrgCtrlDataItem >();
+		CRect rect = {
+			left,
+			top,
+			left + NODE_WIDTH,
+			top + NODE_HEIGHT
+		};
+        pNode->GetRect() = rect;
+		COrgCtrlDataItem * pParentImpl = NULL;
+		if ( FromNodeHandle( parent, pParentImpl ) ) {
+			pParentImpl->AddChild( pNode );
+		}
+		if ( OrgTreeView * pView = GetView() ) {
 			pView->Invalidate();
 		}
 	}
 }
 
 void OrgTreeDoc::CreateSiblingNode( void ) {
-	if ( OrgTreeView * pView = GetView() ) {
-		POrgTreeDocNodeHandle sibling = pView->GetOrgCtrl().GetFocusedNode();
-		if ( sibling ) {
-			POrgTreeDocNodeHandle parent;
-			POrgTreeDocNodeHandle parent_of_parent;
-			if (
-				GetParentNode( sibling, parent ) &&
-				GetParentNode( parent, parent_of_parent ) // shouldn't create second root node
-			) {
-                CreateDescendantNode( parent );
-            }
-		}
+	POrgTreeDocNodeHandle sibling;
+	if ( GetFocusedNode( sibling ) ) {
+		POrgTreeDocNodeHandle parent;
+		POrgTreeDocNodeHandle parent_of_parent;
+		if (
+			GetParentNode( sibling, parent ) &&
+			GetParentNode( parent, parent_of_parent ) // shouldn't create second root node
+		) {
+            CreateDescendantNode( parent );
+        }
 	}
 }
 
 void OrgTreeDoc::DeleteNode() {
-	if ( OrgTreeView * pView = GetView() ) {
-		POrgTreeDocNodeHandle node = pView->GetOrgCtrl().GetFocusedNode();
-		if ( node ) {
-			DeleteNode( node );
+	POrgTreeDocNodeHandle node;
+	if ( GetFocusedNode( node ) ) {
+		DeleteNode( node );
+		if ( OrgTreeView * pView = GetView() ) {
 			pView->Invalidate();
 		}
 	}

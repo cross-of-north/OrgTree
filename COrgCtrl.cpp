@@ -83,73 +83,14 @@ int COrgCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
   return 0;
 }
 
-bool COrgCtrl::ValidateRecursiveNode( POrgTreeDocNodeHandle & phNode ) const {
-    if ( !phNode ) {
-        POrgTreeDocNodeHandle phRootNode;
-        if ( m_document->GetRootNode( phRootNode ) ) {
-            m_document->GetNextChildNode( phRootNode, phNode );
-        }
-    }
-    return !!phNode;
-}
-
-const POrgTreeDocNodeHandle COrgCtrl::HitTest( const CPoint & point, const POrgTreeDocNodeHandle & phNode_ ) const {
-    POrgTreeDocNodeHandle result;
-    POrgTreeDocNodeHandle phNode = phNode_;
-    if ( ValidateRecursiveNode( phNode ) ) {
-        if ( m_document->GetNodeScreenRect( phNode ).PtInRect( point ) ) {
-            result = phNode;
-        } else {
-            POrgTreeDocNodeHandle phChildNode;
-            while ( m_document->GetNextChildNode( phNode, phChildNode ) ) {
-                result = HitTest( point, phChildNode );
-                if ( result ) {
-                    break;
-                }
-            }
-        }
-    }
-    return result;
-}
-
-void COrgCtrl::ClearFocus( const POrgTreeDocNodeHandle & phNode_ ) {
-    POrgTreeDocNodeHandle phNode = phNode_;
-    if ( ValidateRecursiveNode( phNode ) ) {
-        m_document->SetNodeFocus( phNode, false );
-        POrgTreeDocNodeHandle phChildNode;
-        while ( m_document->GetNextChildNode( phNode, phChildNode ) ) {
-            ClearFocus( phChildNode );
-        }
-    }
-}
-
-const POrgTreeDocNodeHandle COrgCtrl::GetFocusedNode( const POrgTreeDocNodeHandle & phNode_ ) const {
-    POrgTreeDocNodeHandle result;
-    POrgTreeDocNodeHandle phNode = phNode_;
-    if ( ValidateRecursiveNode( phNode ) ) {
-        if ( m_document->GetNodeFocus( phNode ) ) {
-            result = phNode;
-        } else {
-            POrgTreeDocNodeHandle phChildNode;
-            while ( m_document->GetNextChildNode( phNode, phChildNode ) ) {
-                result = GetFocusedNode( phChildNode );
-                if ( result ) {
-                    break;
-                }
-            }
-        }
-    }
-    return result;
-}
-
 void COrgCtrl::OnLButtonUp(UINT nFlags, CPoint point) 
 {
     m_bDragging=FALSE;
     if ( true || point == m_ptMouseDownPoint ) {
-        POrgTreeDocNodeHandle phNode = HitTest( point );
-        if ( phNode || point == m_ptMouseDownPoint ) {
-            POrgTreeDocNodeHandle phOldNode = GetFocusedNode();
-            if ( phOldNode ) {
+        POrgTreeDocNodeHandle phNode;
+        if ( m_document->HitTest( point, phNode ) || point == m_ptMouseDownPoint ) {
+            POrgTreeDocNodeHandle phOldNode;
+            if ( m_document->GetFocusedNode( phOldNode ) ) {
                 m_document->SetNodeFocus( phOldNode, false );
                 Invalidate();
             }
