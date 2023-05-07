@@ -19,8 +19,8 @@ CRect COrgCtrlView::ToTransposedViewRect( const CRect & rcRect, const bool bRota
     rcViewRect.top = m_rcScreenRect.top + LONG( float( rcRect.left ) * m_fZoomRatio );
     rcViewRect.right = m_rcScreenRect.left + LONG( float( rcRect.bottom ) * m_fZoomRatio );
     rcViewRect.bottom = m_rcScreenRect.top + LONG( float( rcRect.right ) * m_fZoomRatio );
-    CPoint offset( m_rcNormalDataRect.Width() / 2, -m_rcNormalDataRect.Height() / 2 );
-    rcViewRect.OffsetRect( offset );
+    //CPoint offset( m_rcNormalDataRect.Width() / 2, -m_rcNormalDataRect.Height() / 2 );
+    //rcViewRect.OffsetRect( offset );
     if ( bRotate ) {
         auto width = rcViewRect.Width();
         auto height = rcViewRect.Height();
