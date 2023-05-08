@@ -60,32 +60,32 @@ void OrgTreeDoc::FillByTestData() {
 	#define NODE_RECT { left, top, left + NODE_WIDTH, top + NODE_HEIGHT }
 	
 	COrgCtrlDataItem::ptr_t pRoot = std::make_shared< COrgCtrlDataItem >();
-	pRoot->GetRect() = NODE_RECT;
+	SetNodeRect( *pRoot, NODE_RECT );
 
 	left += NODE_WIDTH + NODE_HSPACE;
 	top = 10;
 
 	COrgCtrlDataItem::ptr_t node1 = std::make_shared< COrgCtrlDataItem >();
-	node1->GetRect() = NODE_RECT;
+	SetNodeRect( *node1, NODE_RECT );
 	top += NODE_HEIGHT + NODE_VSPACE;
 
 	COrgCtrlDataItem::ptr_t node2 = std::make_shared< COrgCtrlDataItem >();
-	node2->GetRect() = NODE_RECT;
+	SetNodeRect( *node2, NODE_RECT );
 	top += NODE_HEIGHT + NODE_VSPACE;
 
 	COrgCtrlDataItem::ptr_t node3 = std::make_shared< COrgCtrlDataItem >();
-	node3->GetRect() = NODE_RECT;
+	SetNodeRect( *node3, NODE_RECT );
 	//top += NODE_HEIGHT + NODE_VSPACE;
 
 	left += NODE_WIDTH + NODE_HSPACE;
 	//top = top/2;
 
 	COrgCtrlDataItem::ptr_t node4 = std::make_shared< COrgCtrlDataItem >();
-	node4->GetRect() = NODE_RECT;
+	SetNodeRect( *node4, NODE_RECT );
 	top += NODE_HEIGHT + NODE_VSPACE;
 
 	COrgCtrlDataItem::ptr_t node5 = std::make_shared< COrgCtrlDataItem >();
-	node5->GetRect() = NODE_RECT;
+	SetNodeRect( *node5, NODE_RECT );
 	top += NODE_HEIGHT + NODE_VSPACE;
 
 	pRoot->AddChild( node1 );
@@ -126,11 +126,11 @@ bool OrgTreeDoc::GetNextChildNode( const POrgTreeDocNodeHandle & phParent, POrgT
 	COrgCtrlDataItem * parent = NULL;
 	if ( FromNodeHandle( phParent, parent ) ) {
 		auto children = parent->GetChildren();
-		int iNextChildOrder = COrgCtrlDataItem::INVALID_ORDER_HINT;
+		int iNextChildOrder = INVALID_ORDER_HINT;
 		COrgCtrlDataItem * currentChild = NULL;
 		if ( FromNodeHandle( phChild, currentChild ) ) {
-			int iCurrentChildOrder = currentChild->GetOrderHint();
-			if ( iCurrentChildOrder == COrgCtrlDataItem::INVALID_ORDER_HINT ) {
+			int iCurrentChildOrder = GetOrderHint( *currentChild );
+			if ( iCurrentChildOrder == INVALID_ORDER_HINT ) {
 				for ( int i = 0; i < children.size(); i++ ) {
 					if ( children[ i ].get() == currentChild ) {
 						iCurrentChildOrder = i;
@@ -138,15 +138,15 @@ bool OrgTreeDoc::GetNextChildNode( const POrgTreeDocNodeHandle & phParent, POrgT
 					}
 				}
 			}
-			if ( iCurrentChildOrder != COrgCtrlDataItem::INVALID_ORDER_HINT ) {
+			if ( iCurrentChildOrder != INVALID_ORDER_HINT ) {
 				iNextChildOrder = iCurrentChildOrder + 1;
 			}
 		} else {
 			iNextChildOrder = 0;
 		}
-		if ( iNextChildOrder != COrgCtrlDataItem::INVALID_ORDER_HINT && children.size() > iNextChildOrder ) {
+		if ( iNextChildOrder != INVALID_ORDER_HINT && children.size() > iNextChildOrder ) {
 			auto child = children[ iNextChildOrder ];
-			child->SetOrderHint( iNextChildOrder );
+			SetOrderHint( *child, iNextChildOrder );
 			GetNodeHandle( child.get(), phNextChild );
 		}
 	}
@@ -165,7 +165,7 @@ bool OrgTreeDoc::GetLastChildNode( const POrgTreeDocNodeHandle & phParent, POrgT
 		auto children = parent->GetChildren();
 		if ( children.size() > 0 ) {
 			auto child = children[ children.size() - 1 ];
-			child->SetOrderHint( int( children.size() - 1 ) );
+			SetOrderHint( *child, int( children.size() - 1 ) );
 			GetNodeHandle( child.get(), phLastChild );
 		}
 	}
@@ -183,13 +183,6 @@ bool OrgTreeDoc::GetParentNode( const POrgTreeDocNodeHandle & phNode, POrgTreeDo
 		}
 	}
 	return phParent && ( static_cast < OrgTreeDocNodeHandle & > ( *phParent ) ).IsValid();
-}
-
-const CRect OrgTreeDoc::GetNodeRect( const POrgTreeDocNodeHandle & phNode ) const {
-	COrgCtrlDataItem * node = NULL;
-	FromNodeHandle( phNode, node );
-	ASSERT( node != NULL );
-	return node == NULL ? CRect() : node->GetRect();
 }
 
 void OrgTreeDoc::DeleteNode( POrgTreeDocNodeHandle & phNode ) {
@@ -311,7 +304,7 @@ bool OrgTreeDoc::CreateContextNode( const CString & uniqueAggregateNodeId, const
 	COrgCtrlDataItem::ptr_t pNode = std::make_shared< COrgCtrlDataItem >();
 	int left = STARTX;
 	int top = STARTY;
-	pNode->GetRect() = NODE_RECT;
+	SetNodeRect( *pNode, NODE_RECT );
 	m_data->GetRoot().AddChild( pNode );
 	if ( OrgTreeView * pView = GetView() ) {
 		pView->Invalidate();
@@ -345,10 +338,11 @@ void OrgTreeDoc::CreateDescendantNode( const POrgTreeDocNodeHandle & parent_ ) {
 		while ( HitTest( rect, overlapped, bScreenCoords ) ) {
 			rect.OffsetRect( NODE_WIDTH + NODE_HSPACE, 0 );
 		}
-		pNode->GetRect() = rect;
+		SetNodeRect( *pNode, rect );
 		COrgCtrlDataItem * pParentImpl = NULL;
 		if ( FromNodeHandle( parent, pParentImpl ) ) {
 			pParentImpl->AddChild( pNode );
+			ResetOrderHints( *pParentImpl );
 		}
 		if ( OrgTreeView * pView = GetView() ) {
 			pView->Invalidate();
@@ -380,25 +374,90 @@ void OrgTreeDoc::DeleteNode() {
 	}
 }
 
+#define SCREEN_RECT_TOP "__screen_rect.top"
+#define SCREEN_RECT_LEFT "__screen_rect.left"
+#define SCREEN_RECT_BOTTOM "__screen_rect.bottom"
+#define SCREEN_RECT_RIGHT "__screen_rect.right"
+#define RECT_TOP "__rect.top"
+#define RECT_LEFT "__rect.left"
+#define RECT_BOTTOM "__rect.bottom"
+#define RECT_RIGHT "__rect.right"
+#define FOCUS "__focus"
+#define ORDER_HINT "__order_hint"
+
 const CRect OrgTreeDoc::GetNodeScreenRect( const POrgTreeDocNodeHandle & phNode ) const {
 	COrgCtrlDataItem * node = NULL;
 	FromNodeHandle( phNode, node );
 	ASSERT( node != NULL );
-	return node == NULL ? CRect() : node->GetScreenRect();
+	CRect rect;
+	if ( node != NULL ) {
+		int top{ 0 };
+		node->GetInt( SCREEN_RECT_TOP, top );
+		rect.top = top;
+		int left{ 0 };
+		node->GetInt( SCREEN_RECT_LEFT, left );
+		rect.left = left;
+		int bottom{ 0 };
+		node->GetInt( SCREEN_RECT_BOTTOM, bottom );
+		rect.bottom = bottom;
+		int right{ 0 };
+		node->GetInt( SCREEN_RECT_RIGHT, right );
+		rect.right = right;
+    }
+	return rect;
 }
 
 void OrgTreeDoc::SetNodeScreenRect( const POrgTreeDocNodeHandle & phNode, const CRect & rect ) const {
 	COrgCtrlDataItem * node = NULL;
 	if ( FromNodeHandle( phNode, node ) ) {
-        node->GetScreenRect() = rect;
+		node->SetInt( SCREEN_RECT_TOP, rect.top );
+		node->SetInt( SCREEN_RECT_LEFT, rect.left );
+		node->SetInt( SCREEN_RECT_BOTTOM, rect.bottom );
+		node->SetInt( SCREEN_RECT_RIGHT, rect.right );
     }
+	ASSERT( node != NULL );
+}
+
+const CRect OrgTreeDoc::GetNodeRect( const POrgTreeDocNodeHandle & phNode ) const {
+	COrgCtrlDataItem * node = NULL;
+	FromNodeHandle( phNode, node );
+	CRect rect;
+	if ( node != NULL ) {
+		int top{ 0 };
+		node->GetInt( RECT_TOP, top );
+		rect.top = top;
+		int left{ 0 };
+		node->GetInt( RECT_LEFT, left );
+		rect.left = left;
+		int bottom{ 0 };
+		node->GetInt( RECT_BOTTOM, bottom );
+		rect.bottom = bottom;
+		int right{ 0 };
+		node->GetInt( RECT_RIGHT, right );
+		rect.right = right;
+	}
+	return rect;
+}
+
+void OrgTreeDoc::SetNodeRect( COrgCtrlDataItem & node, const CRect & rect ) {
+	node.SetInt( RECT_TOP, rect.top );
+	node.SetInt( RECT_LEFT, rect.left );
+	node.SetInt( RECT_BOTTOM, rect.bottom );
+	node.SetInt( RECT_RIGHT, rect.right );
+}
+
+void OrgTreeDoc::SetNodeRect( POrgTreeDocNodeHandle & phNode, const CRect & rect ) {
+	COrgCtrlDataItem * node = NULL;
+	if ( FromNodeHandle( phNode, node ) ) {
+		SetNodeRect( *node, rect );
+	}
 	ASSERT( node != NULL );
 }
 
 void OrgTreeDoc::SetNodeFocus( const POrgTreeDocNodeHandle & phNode, const bool bFocus ) const {
 	COrgCtrlDataItem * node = NULL;
 	if ( FromNodeHandle( phNode, node ) ) {
-		node->SetFocus( bFocus );
+		node->SetInt( FOCUS, bFocus ? 1 : 0 );
 	}
 	ASSERT( node != NULL );
 }
@@ -407,7 +466,32 @@ bool OrgTreeDoc::GetNodeFocus( const POrgTreeDocNodeHandle & phNode ) const {
 	COrgCtrlDataItem * node = NULL;
 	FromNodeHandle( phNode, node );
 	ASSERT( node != NULL );
-	return node == NULL ? CRect() : node->GetFocus();
+	bool bResult = false;
+	if ( node != NULL ) {
+		int result{ 0 };
+		node->GetInt( FOCUS, result );
+		bResult = ( result != 0 );
+	}
+	return bResult;
+}
+
+int OrgTreeDoc::GetOrderHint( const COrgCtrlDataItem & node ) const {
+	int result{ 0 };
+	if ( !node.GetInt( ORDER_HINT, result ) ) {
+		result = INVALID_ORDER_HINT;
+	}		
+	return result;
+}
+
+void OrgTreeDoc::SetOrderHint( COrgCtrlDataItem & node, int orderHint ) const {
+	node.SetInt( ORDER_HINT, orderHint );
+}
+
+void OrgTreeDoc::ResetOrderHints( COrgCtrlDataItem & node ) {
+	auto children = node.GetChildren();
+	for ( int i = 0; i < children.size(); i++ ) {
+		SetOrderHint( *children[ i ], INVALID_ORDER_HINT );
+	}
 }
 
 // OrgTreeDoc commands

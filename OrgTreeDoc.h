@@ -90,6 +90,7 @@ public:
 	virtual bool GetNextChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phChild ) const;
 	virtual const CRect GetNodeRect( const POrgTreeDocNodeHandle & phNode ) const;
 	virtual const CRect GetNodeScreenRect( const POrgTreeDocNodeHandle & phNode ) const;
+	virtual void SetNodeRect( POrgTreeDocNodeHandle & phNode, const CRect & rect );
 	virtual void SetNodeScreenRect( const POrgTreeDocNodeHandle & phNode, const CRect & rect ) const;
 	virtual void SetNodeFocus( const POrgTreeDocNodeHandle & phNode, const bool bFocus ) const;
 	virtual bool GetNodeFocus( const POrgTreeDocNodeHandle & phNode ) const;
@@ -99,10 +100,16 @@ public:
 
 protected:
 
+	static const int INVALID_ORDER_HINT = -1;
+
 	COrgCtrlData::ptr_t m_data;
 
 	void GetNodeHandle( COrgCtrlDataItem * node, POrgTreeDocNodeHandle & phNode ) const;
 	static bool FromNodeHandle( const POrgTreeDocNodeHandle & phNode, COrgCtrlDataItem * & node );
+	void SetNodeRect( COrgCtrlDataItem & node, const CRect & rect );
+	int GetOrderHint( const COrgCtrlDataItem & node ) const;
+	void SetOrderHint( COrgCtrlDataItem & node, int orderHint ) const;
+	void ResetOrderHints( COrgCtrlDataItem & node );
 
 	// Generated message map functions
 protected:

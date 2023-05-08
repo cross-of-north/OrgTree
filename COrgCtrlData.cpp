@@ -7,20 +7,17 @@
 COrgCtrlDataItem::~COrgCtrlDataItem() {
 }
 
-void COrgCtrlDataItem::ResetOrderHints() {
-    for ( int i = 0; i < m_children.size(); i++ ) {
-        m_children[ i ]->SetOrderHint( COrgCtrlDataItem::INVALID_ORDER_HINT );
-    }
+void COrgCtrlDataItem::ResetProperties() {
+    m_properties.clear();
 }
 
 void COrgCtrlDataItem::AddChild( const ptr_t & pChild ) {
     m_children.push_back( pChild );
     pChild->SetParent( this );
-    ResetOrderHints();
 }
 
 void COrgCtrlDataItem::Clear() {
-    ResetOrderHints();
+    ResetProperties();
     for ( auto it: m_children ) {
         it->SetParent( nullptr );
         it->Delete();
@@ -40,10 +37,37 @@ void COrgCtrlDataItem::Delete() {
     if ( m_pParent ) {
         m_pParent->RemoveChild( locked_this );
     }
-    m_iOrderHint = COrgCtrlDataItem::INVALID_ORDER_HINT;
-    m_rcRect.SetRectEmpty();
-    m_rcScreenRect.SetRectEmpty();
-    m_bFocus = false;
+    ResetProperties();
     m_pParent = nullptr;
     Clear();
+}
+
+bool COrgCtrlDataItem::GetString( const char * name, std::string & value ) const {
+    auto it = m_properties.find( name );
+    bool bResult = !( it == m_properties.end() );
+    if ( bResult ) {
+        value = it->second;
+    } else {
+        value.clear();
+    }
+    return bResult;
+}
+
+bool COrgCtrlDataItem::GetInt( const char * name, int & value ) const {
+    std::string s;
+    bool bResult = GetString( name, s );
+    if ( bResult ) {
+        value = std::stoi( s );
+    } else {
+        value = 0;
+    }
+    return bResult;
+}
+
+void COrgCtrlDataItem::SetString( const char * name, const std::string & value ) {
+    m_properties[ name ] = value;
+}
+
+void COrgCtrlDataItem::SetInt( const char * name, const int value ) {
+    SetString( name, std::to_string( value ) );
 }
