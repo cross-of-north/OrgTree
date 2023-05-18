@@ -4,6 +4,8 @@
 #include "pch.h"
 #include "COrgCtrlPainter.h"
 
+#include "PropertyNames.h"
+
 COrgCtrlPainter::COrgCtrlPainter( CDC & dc, const CRect & rcClient, const IOrgTreeDoc & document, const COrgCtrlView & view )
     : m_dc( dc )
     , m_rcClient( rcClient )
@@ -47,7 +49,7 @@ void COrgCtrlPainter::PaintNode( const POrgTreeDocNodeHandle & phNode, const int
     ASSERT( !node_rect.IsRectEmpty() );
     int iChildDepth = iDepth + 1;
     int iChildOrder = 0;
-    
+
     POrgTreeDocNodeHandle phChildNode;
     while ( m_document.GetNextChildNode( phNode, phChildNode ) ) {
         const CRect child_rect = m_view.ToViewRect( m_document.GetNodeRect( phChildNode ), iChildDepth, iChildOrder, iCount );
@@ -72,6 +74,10 @@ void COrgCtrlPainter::PaintNode( const POrgTreeDocNodeHandle & phNode, const int
         m_dc.Rectangle( node_rect );
     } else {
         m_dc.Rectangle( node_rect );
+    }
+    CString s;
+    if ( m_document.GetNodeProperty( phNode, S_NAME, s ) ) {
+        m_dc.TextOutW( node_rect.left + 1, node_rect.top + 1, s );
     }
 }
 

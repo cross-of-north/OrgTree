@@ -97,6 +97,10 @@ public:
 	virtual bool GetLastChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phLastChild ) const;
 	virtual bool GetParentNode( const POrgTreeDocNodeHandle & phNode, POrgTreeDocNodeHandle & phParent ) const;
 	virtual void DeleteNode( POrgTreeDocNodeHandle & phNode );
+	virtual void SetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, const CString & strValue );
+	virtual bool GetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, CString & strValue ) const;
+	virtual void SetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, const __int64 iValue );
+	virtual bool GetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, __int64 & iValue ) const;
 
 protected:
 
@@ -110,6 +114,7 @@ protected:
 	int GetOrderHint( const COrgCtrlDataItem & node ) const;
 	void SetOrderHint( COrgCtrlDataItem & node, int orderHint ) const;
 	void ResetOrderHints( COrgCtrlDataItem & node );
+	void SetNodeProperty( COrgCtrlDataItem & node, const wchar_t * strName, const CString & strValue );
 
 	// Generated message map functions
 protected:

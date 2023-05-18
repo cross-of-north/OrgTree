@@ -30,10 +30,15 @@ public:
     virtual bool GetLastChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phChild ) const = 0;
     virtual bool GetParentNode( const POrgTreeDocNodeHandle & phNode, POrgTreeDocNodeHandle & phParent ) const = 0;
     virtual void DeleteNode( POrgTreeDocNodeHandle & phNode ) = 0;
-    
+    virtual void SetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, const CString & strValue ) = 0;
+    virtual bool GetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, CString & strValue ) const = 0;
+    virtual void SetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, const __int64 iValue ) = 0;
+    virtual bool GetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, __int64 & iValue ) const = 0;
+
     bool HitTest( const CPoint & point, POrgTreeDocNodeHandle & phHitNode, const bool bScreenCoords = true ) const;
     bool HitTest( const CRect & rect, POrgTreeDocNodeHandle & phHitNode, const bool bScreenCoords = true, const POrgTreeDocNodeHandle & phStartNode = NULL ) const;
     bool GetFocusedNode( POrgTreeDocNodeHandle & phFocusedNode, const POrgTreeDocNodeHandle & phStartNode = NULL ) const;
     void ClearFocus( const POrgTreeDocNodeHandle & phNode = NULL );
+    void SetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, const wchar_t * strValue );
 
 };

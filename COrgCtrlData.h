@@ -6,7 +6,7 @@ class COrgCtrlDataItem: public std::enable_shared_from_this < COrgCtrlDataItem >
 public:
     typedef std::shared_ptr < COrgCtrlDataItem > ptr_t;
     typedef std::vector< ptr_t > array_t;
-    typedef std::map < std::string, std::string > properties_t;
+    typedef std::map < std::wstring, std::wstring > properties_t;
 protected:
     COrgCtrlDataItem * m_pParent{ nullptr };
     array_t m_children;
@@ -24,10 +24,10 @@ public:
     void Delete();
     void Clear();
 
-    bool GetString( const char * name, std::string & value ) const;
-    bool GetInt( const char * name, int & value ) const;
-    void SetString( const char * name, const std::string & value );
-    void SetInt( const char * name, const int value );
+    bool GetString( const wchar_t * name, std::wstring & value ) const;
+    bool GetInt( const wchar_t * name, __int64 & value ) const;
+    void SetString( const wchar_t * name, const std::wstring & value );
+    void SetInt( const wchar_t * name, const __int64 value );
 
 private:
     COrgCtrlDataItem( const COrgCtrlDataItem & source ) = delete;

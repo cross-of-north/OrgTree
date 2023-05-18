@@ -195,6 +195,7 @@
     <ClInclude Include="OrgTreeApp.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PropertiesWnd.h" />
+    <ClInclude Include="PropertyNames.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="OrgTreeDoc.h" />

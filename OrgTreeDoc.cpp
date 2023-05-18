@@ -18,6 +18,7 @@
 #include "OrgTreeDoc.h"
 
 #include "OrgTreeView.h"
+#include "PropertyNames.h"
 
 #include <propkey.h>
 
@@ -50,49 +51,100 @@ OrgTreeDoc::~OrgTreeDoc()
 #define NODE_WIDTH 40
 #define NODE_HEIGHT 20
 #define NODE_HSPACE 40
-#define NODE_VSPACE 60
+#define NODE_VSPACE 5
+#define NODE_HSPAN ( NODE_WIDTH + NODE_HSPACE )
+#define NODE_VSPAN ( NODE_HEIGHT + NODE_VSPACE )
 
 void OrgTreeDoc::FillByTestData() {
 	#define STARTX 50
 	#define STARTY 50
 	int left = STARTX;
-	int top = STARTY;
+	int top = STARTY + 7 * NODE_VSPAN;
 	#define NODE_RECT { left, top, left + NODE_WIDTH, top + NODE_HEIGHT }
 	
 	COrgCtrlDataItem::ptr_t pRoot = std::make_shared< COrgCtrlDataItem >();
 	SetNodeRect( *pRoot, NODE_RECT );
+	SetNodeProperty( *pRoot, S_NAME, L"Robert George" );
 
-	left += NODE_WIDTH + NODE_HSPACE;
-	top = 10;
+	left += NODE_HSPAN;
+	top -= NODE_VSPAN * 4;
 
 	COrgCtrlDataItem::ptr_t node1 = std::make_shared< COrgCtrlDataItem >();
 	SetNodeRect( *node1, NODE_RECT );
-	top += NODE_HEIGHT + NODE_VSPACE;
+	SetNodeProperty( *node1, S_NAME, L"Fred" );
+	pRoot->AddChild( node1 );
+
+	top += NODE_VSPAN * 8;
 
 	COrgCtrlDataItem::ptr_t node2 = std::make_shared< COrgCtrlDataItem >();
 	SetNodeRect( *node2, NODE_RECT );
-	top += NODE_HEIGHT + NODE_VSPACE;
-
-	COrgCtrlDataItem::ptr_t node3 = std::make_shared< COrgCtrlDataItem >();
-	SetNodeRect( *node3, NODE_RECT );
-	//top += NODE_HEIGHT + NODE_VSPACE;
-
-	left += NODE_WIDTH + NODE_HSPACE;
-	//top = top/2;
-
-	COrgCtrlDataItem::ptr_t node4 = std::make_shared< COrgCtrlDataItem >();
-	SetNodeRect( *node4, NODE_RECT );
-	top += NODE_HEIGHT + NODE_VSPACE;
-
-	COrgCtrlDataItem::ptr_t node5 = std::make_shared< COrgCtrlDataItem >();
-	SetNodeRect( *node5, NODE_RECT );
-	top += NODE_HEIGHT + NODE_VSPACE;
-
-	pRoot->AddChild( node1 );
+	SetNodeProperty( *node2, S_NAME, L"Johanna" );
 	pRoot->AddChild( node2 );
-	node2->AddChild( node4 );
-	node2->AddChild( node5 );
-	pRoot->AddChild( node3 );
+
+	left += NODE_HSPAN;
+	top -= NODE_VSPAN * 10;
+
+	COrgCtrlDataItem::ptr_t node11 = std::make_shared< COrgCtrlDataItem >();
+	SetNodeRect( *node11, NODE_RECT );
+	SetNodeProperty( *node11, S_NAME, L"Urs" );
+	node1->AddChild( node11 );
+
+	top += NODE_VSPAN * 4;
+
+	COrgCtrlDataItem::ptr_t node12 = std::make_shared< COrgCtrlDataItem >();
+	SetNodeRect( *node12, NODE_RECT );
+	SetNodeProperty( *node12, S_NAME, L"Elizabeth" );
+	node1->AddChild( node12 );
+
+	top += NODE_VSPAN * 4;
+
+	COrgCtrlDataItem::ptr_t node21 = std::make_shared< COrgCtrlDataItem >();
+	SetNodeRect( *node21, NODE_RECT );
+	SetNodeProperty( *node21, S_NAME, L"Charles" );
+	node2->AddChild( node21 );
+
+	top += NODE_VSPAN * 4;
+
+	COrgCtrlDataItem::ptr_t node22 = std::make_shared< COrgCtrlDataItem >();
+	SetNodeRect( *node22, NODE_RECT );
+	SetNodeProperty( *node22, S_NAME, L"Wilhemena" );
+	node2->AddChild( node22 );
+
+	left += NODE_HSPAN;
+	top -= NODE_VSPAN * 13;
+
+	COrgCtrlDataItem::ptr_t node111 = std::make_shared< COrgCtrlDataItem >();
+	SetNodeRect( *node111, NODE_RECT );
+	SetNodeProperty( *node111, S_NAME, L"E" );
+	node11->AddChild( node111 );
+
+	top += NODE_VSPAN * 2;
+
+	COrgCtrlDataItem::ptr_t node112 = std::make_shared< COrgCtrlDataItem >();
+	SetNodeRect( *node112, NODE_RECT );
+	SetNodeProperty( *node112, S_NAME, L"M" );
+	node11->AddChild( node112 );
+
+	top += NODE_VSPAN * 2;
+
+	COrgCtrlDataItem::ptr_t node121 = std::make_shared< COrgCtrlDataItem >();
+	SetNodeRect( *node121, NODE_RECT );
+	SetNodeProperty( *node121, S_NAME, L"H" );
+	node12->AddChild( node121 );
+
+	top += NODE_VSPAN * 2;
+
+	COrgCtrlDataItem::ptr_t node122 = std::make_shared< COrgCtrlDataItem >();
+	SetNodeRect( *node122, NODE_RECT );
+	SetNodeProperty( *node122, S_NAME, L"M" );
+	node12->AddChild( node122 );
+
+	top += NODE_VSPAN * 2;
+
+	COrgCtrlDataItem::ptr_t node211 = std::make_shared< COrgCtrlDataItem >();
+	SetNodeRect( *node211, NODE_RECT );
+	SetNodeProperty( *node211, S_NAME, L"?" );
+	node21->AddChild( node211 );
 
 	m_data->GetRoot().Clear();
 	m_data->GetRoot().AddChild( pRoot );
@@ -374,16 +426,16 @@ void OrgTreeDoc::DeleteNode() {
 	}
 }
 
-#define SCREEN_RECT_TOP "__screen_rect.top"
-#define SCREEN_RECT_LEFT "__screen_rect.left"
-#define SCREEN_RECT_BOTTOM "__screen_rect.bottom"
-#define SCREEN_RECT_RIGHT "__screen_rect.right"
-#define RECT_TOP "__rect.top"
-#define RECT_LEFT "__rect.left"
-#define RECT_BOTTOM "__rect.bottom"
-#define RECT_RIGHT "__rect.right"
-#define FOCUS "__focus"
-#define ORDER_HINT "__order_hint"
+#define SCREEN_RECT_TOP L"__screen_rect.top"
+#define SCREEN_RECT_LEFT L"__screen_rect.left"
+#define SCREEN_RECT_BOTTOM L"__screen_rect.bottom"
+#define SCREEN_RECT_RIGHT L"__screen_rect.right"
+#define RECT_TOP L"__rect.top"
+#define RECT_LEFT L"__rect.left"
+#define RECT_BOTTOM L"__rect.bottom"
+#define RECT_RIGHT L"__rect.right"
+#define FOCUS L"__focus"
+#define ORDER_HINT L"__order_hint"
 
 const CRect OrgTreeDoc::GetNodeScreenRect( const POrgTreeDocNodeHandle & phNode ) const {
 	COrgCtrlDataItem * node = NULL;
@@ -391,18 +443,18 @@ const CRect OrgTreeDoc::GetNodeScreenRect( const POrgTreeDocNodeHandle & phNode 
 	ASSERT( node != NULL );
 	CRect rect;
 	if ( node != NULL ) {
-		int top{ 0 };
+		__int64 top{ 0 };
 		node->GetInt( SCREEN_RECT_TOP, top );
-		rect.top = top;
-		int left{ 0 };
+		rect.top = LODWORD( top );
+		__int64 left{ 0 };
 		node->GetInt( SCREEN_RECT_LEFT, left );
-		rect.left = left;
-		int bottom{ 0 };
+		rect.left = LODWORD( left );
+		__int64 bottom{ 0 };
 		node->GetInt( SCREEN_RECT_BOTTOM, bottom );
-		rect.bottom = bottom;
-		int right{ 0 };
+		rect.bottom = LODWORD( bottom );
+		__int64 right{ 0 };
 		node->GetInt( SCREEN_RECT_RIGHT, right );
-		rect.right = right;
+		rect.right = LODWORD( right );
     }
 	return rect;
 }
@@ -423,18 +475,18 @@ const CRect OrgTreeDoc::GetNodeRect( const POrgTreeDocNodeHandle & phNode ) cons
 	FromNodeHandle( phNode, node );
 	CRect rect;
 	if ( node != NULL ) {
-		int top{ 0 };
+		__int64 top{ 0 };
 		node->GetInt( RECT_TOP, top );
-		rect.top = top;
-		int left{ 0 };
+		rect.top = LODWORD( top );
+		__int64 left{ 0 };
 		node->GetInt( RECT_LEFT, left );
-		rect.left = left;
-		int bottom{ 0 };
+		rect.left = LODWORD( left );
+		__int64 bottom{ 0 };
 		node->GetInt( RECT_BOTTOM, bottom );
-		rect.bottom = bottom;
-		int right{ 0 };
+		rect.bottom = LODWORD( bottom );
+		__int64 right{ 0 };
 		node->GetInt( RECT_RIGHT, right );
-		rect.right = right;
+		rect.right = LODWORD( right );
 	}
 	return rect;
 }
@@ -468,19 +520,64 @@ bool OrgTreeDoc::GetNodeFocus( const POrgTreeDocNodeHandle & phNode ) const {
 	ASSERT( node != NULL );
 	bool bResult = false;
 	if ( node != NULL ) {
-		int result{ 0 };
+		__int64 result{ 0 };
 		node->GetInt( FOCUS, result );
 		bResult = ( result != 0 );
 	}
 	return bResult;
 }
 
+void OrgTreeDoc::SetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, const CString & strValue ) {
+	COrgCtrlDataItem * node = NULL;
+	if ( FromNodeHandle( phNode, node ) ) {
+		std::wstring s( strValue );
+		node->SetString( strName, s );
+	}
+	ASSERT( node != NULL );
+}
+
+bool OrgTreeDoc::GetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, CString & strValue ) const {
+	strValue.Empty();
+	COrgCtrlDataItem * node = NULL;
+	FromNodeHandle( phNode, node );
+	ASSERT( node != NULL );
+	bool bResult = false;
+	if ( node != NULL ) {
+		std::wstring s;
+		bResult = node->GetString( strName, s );
+		if ( bResult ) {
+			strValue = s.c_str();
+		}
+	}
+	return bResult;
+}
+
+void OrgTreeDoc::SetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, const __int64 iValue ) {
+	COrgCtrlDataItem * node = NULL;
+	if ( FromNodeHandle( phNode, node ) ) {
+		node->SetInt( strName, iValue );
+	}
+	ASSERT( node != NULL );
+}
+
+bool OrgTreeDoc::GetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, __int64 & iValue ) const {
+	iValue = 0;
+	COrgCtrlDataItem * node = NULL;
+	FromNodeHandle( phNode, node );
+	ASSERT( node != NULL );
+	bool bResult = false;
+	if ( node != NULL ) {
+		bResult = node->GetInt( strName, iValue );
+	}
+	return bResult;
+}
+
 int OrgTreeDoc::GetOrderHint( const COrgCtrlDataItem & node ) const {
-	int result{ 0 };
+	__int64 result{ 0 };
 	if ( !node.GetInt( ORDER_HINT, result ) ) {
 		result = INVALID_ORDER_HINT;
 	}		
-	return result;
+	return LODWORD( result );
 }
 
 void OrgTreeDoc::SetOrderHint( COrgCtrlDataItem & node, int orderHint ) const {
@@ -492,6 +589,10 @@ void OrgTreeDoc::ResetOrderHints( COrgCtrlDataItem & node ) {
 	for ( int i = 0; i < children.size(); i++ ) {
 		SetOrderHint( *children[ i ], INVALID_ORDER_HINT );
 	}
+}
+
+void OrgTreeDoc::SetNodeProperty( COrgCtrlDataItem & node, const wchar_t * strName, const CString & strValue ) {
+	node.SetString( strName, strValue.GetString() );
 }
 
 // OrgTreeDoc commands

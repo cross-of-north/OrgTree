@@ -70,3 +70,6 @@ bool IOrgTreeDoc::GetFocusedNode( POrgTreeDocNodeHandle & phFocusedNode, const P
 	return bResult;
 }
 
+void IOrgTreeDoc::SetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, const wchar_t * strValue ) {
+	SetNodeProperty( phNode, strName, CString( strValue ) );
+}

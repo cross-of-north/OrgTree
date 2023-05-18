@@ -42,7 +42,7 @@ void COrgCtrlDataItem::Delete() {
     Clear();
 }
 
-bool COrgCtrlDataItem::GetString( const char * name, std::string & value ) const {
+bool COrgCtrlDataItem::GetString( const wchar_t * name, std::wstring & value ) const {
     auto it = m_properties.find( name );
     bool bResult = !( it == m_properties.end() );
     if ( bResult ) {
@@ -53,8 +53,8 @@ bool COrgCtrlDataItem::GetString( const char * name, std::string & value ) const
     return bResult;
 }
 
-bool COrgCtrlDataItem::GetInt( const char * name, int & value ) const {
-    std::string s;
+bool COrgCtrlDataItem::GetInt( const wchar_t * name, __int64 & value ) const {
+    std::wstring s;
     bool bResult = GetString( name, s );
     if ( bResult ) {
         value = std::stoi( s );
@@ -64,10 +64,10 @@ bool COrgCtrlDataItem::GetInt( const char * name, int & value ) const {
     return bResult;
 }
 
-void COrgCtrlDataItem::SetString( const char * name, const std::string & value ) {
+void COrgCtrlDataItem::SetString( const wchar_t * name, const std::wstring & value ) {
     m_properties[ name ] = value;
 }
 
-void COrgCtrlDataItem::SetInt( const char * name, const int value ) {
-    SetString( name, std::to_string( value ) );
+void COrgCtrlDataItem::SetInt( const wchar_t * name, const __int64 value ) {
+    SetString( name, std::to_wstring( value ) );
 }
