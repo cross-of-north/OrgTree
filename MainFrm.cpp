@@ -18,6 +18,7 @@
 #include "OrgTreeApp.h"
 #include "OrgTreeView.h"
 #include "OrgTreeDoc.h"
+#include "PropertyNames.h"
 
 #include "MainFrm.h"
 
@@ -53,6 +54,7 @@ BEGIN_MESSAGE_MAP(MainFrame, CFrameWndEx)
 	ON_COMMAND( ID_GREATGRANDPARENTGENDER_COMBO, &MainFrame::OnGreatGrandParentGenderCombo )
 	ON_COMMAND( ID_GREATGRANDPARENT_COMBO, &MainFrame::OnGreatGrandParentCombo )
 	ON_COMMAND( ID_CONTEXTSEARCH_BUTTON, &MainFrame::OnContextSearchButton )
+	ON_UPDATE_COMMAND_UI( ID_MYFAMILY_COMBO, &MainFrame::OnUpdateMyfamilyCombo )
 END_MESSAGE_MAP()
 
 // MainFrame construction/destruction
@@ -361,8 +363,40 @@ void MainFrame::OnGreatGrandParentGenderCombo()
 void MainFrame::OnGreatGrandParentCombo()
 {}
 
-void MainFrame::OnContextSearchButton()
-{}
+void CleanComboString( CString & combo_string ) {
+	while (
+		combo_string.GetLength() > 0
+		&&
+		(
+			( combo_string[ 0 ] >= '0' && combo_string[ 0 ] <= '9' )
+			||
+			combo_string[ 0 ] == '.'
+			||
+			combo_string[ 0 ] == ' '
+			)
+		) {
+		combo_string = combo_string.Mid( 1 );
+	}
+}
+
+#define COMBO_BY_ID( name, id ) \
+	CMFCRibbonComboBox * p##name##Combo = DYNAMIC_DOWNCAST( CMFCRibbonComboBox, m_wndRibbonBar.FindByID( id ) ); \
+	CString s##name; \
+	if ( p##name##Combo != NULL ) { \
+		s##name = p##name##Combo->GetEditText(); \
+	}
+
+void MainFrame::OnContextSearchButton() {
+	COMBO_BY_ID( MyFamily, ID_MYFAMILY_COMBO );
+	COMBO_BY_ID( Relation, ID_RELATION_COMBO );
+	COMBO_BY_ID( RelationGender, ID_RELATIONGENDER_COMBO );
+	COMBO_BY_ID( GrandParent, ID_GRANDPARENT_COMBO );
+	COMBO_BY_ID( GreatGrandParentGender, ID_GREATGRANDPARENTGENDER_COMBO );
+	COMBO_BY_ID( GreatGrandParent, ID_GREATGRANDPARENT_COMBO );
+	CleanComboString( sMyFamily );
+	CString context( sMyFamily + L":" + sRelation + L":" + sRelationGender + L":" + sGrandParent + L":" + sGreatGrandParentGender + L":" + sGreatGrandParent );
+	context.Empty();
+}
 
 	// CreateMainFrameContextNodeGridRow( const CString& uniqueAggregateNodeId, const CString& productionRuleString, DWORD parentCxNodeObjId, DWORD cxNodeObjId, DWORD cxNodeThreadId )
 	// uniqueAggregateNodeId = L"Boy@c0:627e:7f00:d5:d430:ef2d:23bd:26f0#57895#23", productionRuleString = L"( Wife? & Parents & Children* ) | CDATA )", parentCxNodeObjId = 0, cxNodeObjId = 1193322685, cxNodeThreadId = 75716
@@ -370,3 +404,34 @@ void MainFrame::OnContextSearchButton()
 	// uniqueAggregateNodeId = L"Children@c0:627e:7f00:e1:7cbf:f6cc:110a:d94e#60760#23", productionRuleString = L"CDATA", parentCxNodeObjId = 1193322685, cxNodeObjId = 700228782, cxNodeThreadId = 116612
 	// (see 'boy dtd grid.png' for how it looked in the prototype)
   // (see 'Boy.dtd' which is the DTD that generated the above data)
+
+
+void MainFrame::OnUpdateMyfamilyCombo( CCmdUI * pCmdUI ) {
+	OrgTreeDoc * doc = GetDocument();
+	COMBO_BY_ID( MyFamily, ID_MYFAMILY_COMBO );
+	if ( doc != NULL && pMyFamilyCombo != NULL ) {
+		bool bMatch = true;
+		COrgTreeDocNodeHandleList nodes;
+		doc->GetAllNodes( nodes );
+		auto it = nodes.begin();
+		for ( auto i = 0; i < pMyFamilyCombo->GetCount() && it != nodes.end() && bMatch; i++ ) {
+			CString combo_string( pMyFamilyCombo->GetItem( i ) );
+			CleanComboString( combo_string );
+			CString node_string;
+			doc->GetNodeProperty( *it, S_NAME, node_string );
+            bMatch = ( combo_string == node_string );
+            it++;
+        }
+		if ( !bMatch ) {
+			pMyFamilyCombo->RemoveAllItems();
+			int i = 1;
+			for ( auto it = nodes.begin(); it != nodes.end(); it++ ) {
+				CString node_string;
+				doc->GetNodeProperty( *it, S_NAME, node_string );
+				node_string.Format( L"%d. %s", i, node_string );
+				pMyFamilyCombo->AddItem( node_string );
+				i++;
+			}
+		}
+	}
+}

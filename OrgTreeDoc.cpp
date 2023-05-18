@@ -101,7 +101,7 @@ public:
 		left += NODE_HSPAN;
 		top -= NODE_VSPAN * 10;
 
-		COrgCtrlDataItem::ptr_t node11 = CreateNode( L"Urs", S_PARENTS, S_PATERNAL, S_HUSBAND, node11 );
+		COrgCtrlDataItem::ptr_t node11 = CreateNode( L"Urs", S_PARENTS, S_PATERNAL, S_HUSBAND, node1 );
 
 		top += NODE_VSPAN * 4;
 

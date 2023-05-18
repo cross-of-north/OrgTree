@@ -73,3 +73,30 @@ bool IOrgTreeDoc::GetFocusedNode( POrgTreeDocNodeHandle & phFocusedNode, const P
 void IOrgTreeDoc::SetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, const wchar_t * strValue ) {
 	SetNodeProperty( phNode, strName, CString( strValue ) );
 }
+
+void IOrgTreeDoc::GetAllNodes( COrgTreeDocNodeHandleList & nodes, const POrgTreeDocNodeHandle & phStartNode ) const {
+	POrgTreeDocNodeHandle phNode = phStartNode;
+	if ( !phStartNode ) {
+		nodes.clear();
+	}
+	if ( ValidateRecursiveNode( phNode ) ) {
+		nodes.push_back( phNode );
+		POrgTreeDocNodeHandle phChildNode;
+		while ( GetNextChildNode( phNode, phChildNode ) ) {
+			GetAllNodes( nodes, phChildNode );
+		}
+	}
+}
+
+void IOrgTreeDoc::GetChildrenByProperty( const POrgTreeDocNodeHandle & phParent, const wchar_t * strName, const CString & strValue, COrgTreeDocNodeHandleList & children ) const {
+	children.clear();
+	POrgTreeDocNodeHandle phChild;
+	while ( GetNextChildNode( phParent, phChild ) ) {
+		CString value;
+		if ( GetNodeProperty( phChild, strName, value ) ) {
+			if ( value == strValue ) {
+				children.push_back( phChild );
+			}
+		}
+	}
+}
