@@ -86,6 +86,9 @@ public:
 	void CreateSiblingNode( void );
 	void DeleteNode();
 
+	void SetNodeRect( COrgCtrlDataItem & node, const CRect & rect );
+	void SetNodeProperty( COrgCtrlDataItem & node, const wchar_t * strName, const CString & strValue );
+
 	virtual bool GetRootNode( POrgTreeDocNodeHandle & phNode ) const;
 	virtual bool GetNextChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phChild ) const;
 	virtual const CRect GetNodeRect( const POrgTreeDocNodeHandle & phNode ) const;
@@ -110,11 +113,9 @@ protected:
 
 	void GetNodeHandle( COrgCtrlDataItem * node, POrgTreeDocNodeHandle & phNode ) const;
 	static bool FromNodeHandle( const POrgTreeDocNodeHandle & phNode, COrgCtrlDataItem * & node );
-	void SetNodeRect( COrgCtrlDataItem & node, const CRect & rect );
 	int GetOrderHint( const COrgCtrlDataItem & node ) const;
 	void SetOrderHint( COrgCtrlDataItem & node, int orderHint ) const;
 	void ResetOrderHints( COrgCtrlDataItem & node );
-	void SetNodeProperty( COrgCtrlDataItem & node, const wchar_t * strName, const CString & strValue );
 
 	// Generated message map functions
 protected:

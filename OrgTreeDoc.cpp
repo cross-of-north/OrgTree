@@ -55,99 +55,94 @@ OrgTreeDoc::~OrgTreeDoc()
 #define NODE_HSPAN ( NODE_WIDTH + NODE_HSPACE )
 #define NODE_VSPAN ( NODE_HEIGHT + NODE_VSPACE )
 
-void OrgTreeDoc::FillByTestData() {
-	#define STARTX 50
-	#define STARTY 50
-	int left = STARTX;
-	int top = STARTY + 7 * NODE_VSPAN;
-	#define NODE_RECT { left, top, left + NODE_WIDTH, top + NODE_HEIGHT }
+#define STARTX 50
+#define STARTY 50
+#define NODE_RECT { left, top, left + NODE_WIDTH, top + NODE_HEIGHT }
+class CTreeExampleBuilder {
+public:
+	int left{ STARTX };
+	int top{ STARTY + 7 * NODE_VSPAN };
+	OrgTreeDoc & doc;
 	
-	COrgCtrlDataItem::ptr_t pRoot = std::make_shared< COrgCtrlDataItem >();
-	SetNodeRect( *pRoot, NODE_RECT );
-	SetNodeProperty( *pRoot, S_NAME, L"Robert George" );
+	CTreeExampleBuilder( OrgTreeDoc & doc_ ) : doc( doc_ ) {}
+	
+	COrgCtrlDataItem::ptr_t CreateNode(
+		const wchar_t * name,
+		const wchar_t * relation,
+		const wchar_t * relation_gender,
+		const wchar_t * rrr,
+		const COrgCtrlDataItem::ptr_t & parent = NULL
+	) {
+		COrgCtrlDataItem::ptr_t pNode = std::make_shared< COrgCtrlDataItem >();
+		doc.SetNodeRect( *pNode, NODE_RECT );
+		doc.SetNodeProperty( *pNode, S_NAME, name );
+		doc.SetNodeProperty( *pNode, S_RELATION, relation );
+		doc.SetNodeProperty( *pNode, S_RELATION_GENDER, relation_gender );
+		doc.SetNodeProperty( *pNode, S_RRR, rrr );
+		if ( parent ) {
+			parent->AddChild( pNode );
+		}
+		return pNode;
+	}
 
-	left += NODE_HSPAN;
-	top -= NODE_VSPAN * 4;
+	COrgCtrlDataItem::ptr_t Build() {
 
-	COrgCtrlDataItem::ptr_t node1 = std::make_shared< COrgCtrlDataItem >();
-	SetNodeRect( *node1, NODE_RECT );
-	SetNodeProperty( *node1, S_NAME, L"Fred" );
-	pRoot->AddChild( node1 );
+		COrgCtrlDataItem::ptr_t pRoot = CreateNode( L"Robert George", S_MYFAMILY, L"", L"" );
 
-	top += NODE_VSPAN * 8;
+		left += NODE_HSPAN;
+		top -= NODE_VSPAN * 4;
 
-	COrgCtrlDataItem::ptr_t node2 = std::make_shared< COrgCtrlDataItem >();
-	SetNodeRect( *node2, NODE_RECT );
-	SetNodeProperty( *node2, S_NAME, L"Johanna" );
-	pRoot->AddChild( node2 );
+		COrgCtrlDataItem::ptr_t node1 = CreateNode( L"Fred", S_PARENTS, S_PATERNAL, S_HUSBAND, pRoot );
 
-	left += NODE_HSPAN;
-	top -= NODE_VSPAN * 10;
+		top += NODE_VSPAN * 8;
 
-	COrgCtrlDataItem::ptr_t node11 = std::make_shared< COrgCtrlDataItem >();
-	SetNodeRect( *node11, NODE_RECT );
-	SetNodeProperty( *node11, S_NAME, L"Urs" );
-	node1->AddChild( node11 );
+		COrgCtrlDataItem::ptr_t node2 = CreateNode( L"Johanna", S_PARENTS, S_MATERNAL, S_HUSBAND, pRoot );
 
-	top += NODE_VSPAN * 4;
+		left += NODE_HSPAN;
+		top -= NODE_VSPAN * 10;
 
-	COrgCtrlDataItem::ptr_t node12 = std::make_shared< COrgCtrlDataItem >();
-	SetNodeRect( *node12, NODE_RECT );
-	SetNodeProperty( *node12, S_NAME, L"Elizabeth" );
-	node1->AddChild( node12 );
+		COrgCtrlDataItem::ptr_t node11 = CreateNode( L"Urs", S_PARENTS, S_PATERNAL, S_HUSBAND, node11 );
 
-	top += NODE_VSPAN * 4;
+		top += NODE_VSPAN * 4;
 
-	COrgCtrlDataItem::ptr_t node21 = std::make_shared< COrgCtrlDataItem >();
-	SetNodeRect( *node21, NODE_RECT );
-	SetNodeProperty( *node21, S_NAME, L"Charles" );
-	node2->AddChild( node21 );
+		COrgCtrlDataItem::ptr_t node12 = CreateNode( L"Elizabeth", S_PARENTS, S_MATERNAL, S_HUSBAND, node1 );
 
-	top += NODE_VSPAN * 4;
+		top += NODE_VSPAN * 4;
 
-	COrgCtrlDataItem::ptr_t node22 = std::make_shared< COrgCtrlDataItem >();
-	SetNodeRect( *node22, NODE_RECT );
-	SetNodeProperty( *node22, S_NAME, L"Wilhemena" );
-	node2->AddChild( node22 );
+		COrgCtrlDataItem::ptr_t node21 = CreateNode( L"Charles", S_PARENTS, S_PATERNAL, S_HUSBAND, node2 );
 
-	left += NODE_HSPAN;
-	top -= NODE_VSPAN * 13;
+		top += NODE_VSPAN * 4;
 
-	COrgCtrlDataItem::ptr_t node111 = std::make_shared< COrgCtrlDataItem >();
-	SetNodeRect( *node111, NODE_RECT );
-	SetNodeProperty( *node111, S_NAME, L"E" );
-	node11->AddChild( node111 );
+		COrgCtrlDataItem::ptr_t node22 = CreateNode( L"Wilhemena", S_PARENTS, S_MATERNAL, S_HUSBAND, node2 );
 
-	top += NODE_VSPAN * 2;
+		left += NODE_HSPAN;
+		top -= NODE_VSPAN * 13;
 
-	COrgCtrlDataItem::ptr_t node112 = std::make_shared< COrgCtrlDataItem >();
-	SetNodeRect( *node112, NODE_RECT );
-	SetNodeProperty( *node112, S_NAME, L"M" );
-	node11->AddChild( node112 );
+		COrgCtrlDataItem::ptr_t node111 = CreateNode( L"E", S_PARENTS, S_PATERNAL, S_HUSBAND, node11 );
 
-	top += NODE_VSPAN * 2;
+		top += NODE_VSPAN * 2;
 
-	COrgCtrlDataItem::ptr_t node121 = std::make_shared< COrgCtrlDataItem >();
-	SetNodeRect( *node121, NODE_RECT );
-	SetNodeProperty( *node121, S_NAME, L"H" );
-	node12->AddChild( node121 );
+		COrgCtrlDataItem::ptr_t node112 = CreateNode( L"M", S_PARENTS, S_MATERNAL, S_HUSBAND, node11 );
 
-	top += NODE_VSPAN * 2;
+		top += NODE_VSPAN * 2;
 
-	COrgCtrlDataItem::ptr_t node122 = std::make_shared< COrgCtrlDataItem >();
-	SetNodeRect( *node122, NODE_RECT );
-	SetNodeProperty( *node122, S_NAME, L"M" );
-	node12->AddChild( node122 );
+		COrgCtrlDataItem::ptr_t node121 = CreateNode( L"H", S_PARENTS, S_PATERNAL, S_HUSBAND, node12 );
 
-	top += NODE_VSPAN * 2;
+		top += NODE_VSPAN * 2;
 
-	COrgCtrlDataItem::ptr_t node211 = std::make_shared< COrgCtrlDataItem >();
-	SetNodeRect( *node211, NODE_RECT );
-	SetNodeProperty( *node211, S_NAME, L"?" );
-	node21->AddChild( node211 );
+		COrgCtrlDataItem::ptr_t node122 = CreateNode( L"M", S_PARENTS, S_MATERNAL, S_HUSBAND, node12 );
 
+		top += NODE_VSPAN * 2;
+
+		COrgCtrlDataItem::ptr_t node211 = CreateNode( L"?", S_PARENTS, S_PATERNAL, S_HUSBAND, node21 );
+
+		return pRoot;
+	}
+};
+
+void OrgTreeDoc::FillByTestData() {
 	m_data->GetRoot().Clear();
-	m_data->GetRoot().AddChild( pRoot );
+	m_data->GetRoot().AddChild( CTreeExampleBuilder( *this ).Build() );
 }
 
 
