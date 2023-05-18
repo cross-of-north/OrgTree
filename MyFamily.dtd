@@ -1,0 +1,9 @@
+L"<!ELEMENT MyFamily - -( Husband & Wife & Parents & Children* )>"
+L"<!ELEMENT Husband - -CDATA>"
+L"<!ELEMENT Wife - -CDATA>"
+L"<!ELEMENT Parents - -( Maternal & Paternal ) >"
+L"<!ELEMENT Maternal - -( Husband & Wife & Parents & Children+ ) >"
+L"<!ELEMENT Paternal - -( Husband & Wife & Parents & Children+ ) >"
+L"<!ELEMENT Children - -( Boy | Girl ) >"
+L"<!ELEMENT Boy - -((Wife? & Parents & Children*) | CDATA) >"
+L"<!ELEMENT Girl - -((Husband? & Parents & Children*) | CDATA) >"; // RT:181129: (see DONE TODO-255 Resolve What Content Group Clause's Parent's Name Should Be). Just use single parens around all for now.

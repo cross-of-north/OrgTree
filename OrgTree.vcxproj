@@ -240,6 +240,8 @@
     <Image Include="res\writesmall.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Boy.dtd" />
+    <None Include="MyFamily.dtd" />
     <None Include="res\ribbon.mfcribbon-ms" />
     <None Include="res\OrgTree.rc2" />
   </ItemGroup>

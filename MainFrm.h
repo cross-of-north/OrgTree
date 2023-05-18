@@ -69,14 +69,21 @@ protected:
 	void SetOrgCtrlMode( const COrgCtrlView::Mode mode );
 public:
 	afx_msg void OnLeftToRightOrgTreeViewButton();
-	afx_msg void OnDownwardOrgTreeViewButton();
-	afx_msg void OnUpwardOrgTreeViewButton();
+	afx_msg void OnDownwardDescendantOrgTreeViewButton();
+	afx_msg void OnUpwardAncestorOrgTreeViewButton();
 	afx_msg void OnOutlookOrgTreeViewButton();
 	afx_msg void OnGalleryOrgTreeViewButton();
 	afx_msg void OnCreateRootButton();
 	afx_msg void OnCreateDescendantButton();
 	afx_msg void OnCreateSiblingButton();
 	afx_msg void OnDeleteButton();
+	afx_msg void OnMyFamilyCombo();
+	afx_msg void OnRelationCombo();
+	afx_msg void OnRelationGenderCombo();
+	afx_msg void OnGrandParentCombo();
+	afx_msg void OnGreatGrandParentGenderCombo();
+	afx_msg void OnGreatGrandParentCombo();
+	afx_msg void OnContextSearchButton();
 };
 
 

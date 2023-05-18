@@ -50,8 +50,8 @@
 #define IDB_ORGTREEVIEWS_SMALL          309
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_LEFTTORIGHT_TREEVIEW_BUTTON  32771
-#define ID_DOWNWARD_TREEVIEW_BUTTON     32772
-#define ID_UPWARD_TREEVIEW_BUTTON       32773
+#define ID_DOWNWARD_DESCENDANT_TREEVIEW_BUTTON 32772
+#define ID_UPWARD_ANCESTOR_TREEVIEW_BUTTON 32773
 #define ID_OUTLOOK_TREEVIEW_BUTTON      32774
 #define ID_GALLERY_TREEVIEW_BUTTON      32775
 #define ID_CREATEROOT_BUTTON            32777
@@ -59,13 +59,28 @@
 #define ID_CREATESIBLING_BUTTON         32779
 #define ID_DELETE_BUTTON                32780
 #define ID_BUTTON5                      32784
+#define ID_EDIT2                        32785
+#define ID_EDIT3                        32786
+#define ID_EDIT4                        32787
+#define ID_EDIT5                        32788
+#define ID_EDIT6                        32789
+#define ID_COMBO2                       32794
+#define ID_MYFAMILY_COMBO               32795
+#define ID_RELATION_COMBO               32796
+#define ID_RELATIONGENDER_COMBO         32797
+#define ID_GRANDPARENT_COMBO            32798
+#define ID_GREATEGRANDPARENTGENDER_COMBO 32799
+#define ID_GREATGRANDPARENTGENDER_COMBO 32799
+#define ID_GREATGRANDPARENT_COMBO       32800
+#define ID_BUTTON2                      32801
+#define ID_CONTEXTSEARCH_BUTTON         32801
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        310
-#define _APS_NEXT_COMMAND_VALUE         32785
+#define _APS_NEXT_COMMAND_VALUE         32802
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

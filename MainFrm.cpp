@@ -38,14 +38,21 @@ BEGIN_MESSAGE_MAP(MainFrame, CFrameWndEx)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &MainFrame::OnFilePrintPreview)
 	ON_UPDATE_COMMAND_UI(ID_FILE_PRINT_PREVIEW, &MainFrame::OnUpdateFilePrintPreview)
 	ON_COMMAND( ID_LEFTTORIGHT_TREEVIEW_BUTTON, &MainFrame::OnLeftToRightOrgTreeViewButton )
-	ON_COMMAND( ID_DOWNWARD_TREEVIEW_BUTTON, &MainFrame::OnDownwardOrgTreeViewButton )
-	ON_COMMAND( ID_UPWARD_TREEVIEW_BUTTON, &MainFrame::OnUpwardOrgTreeViewButton )
+	ON_COMMAND( ID_UPWARD_ANCESTOR_TREEVIEW_BUTTON, &MainFrame::OnUpwardAncestorOrgTreeViewButton )
+	ON_COMMAND( ID_DOWNWARD_DESCENDANT_TREEVIEW_BUTTON, &MainFrame::OnDownwardDescendantOrgTreeViewButton )
 	ON_COMMAND( ID_OUTLOOK_TREEVIEW_BUTTON, &MainFrame::OnOutlookOrgTreeViewButton )
 	ON_COMMAND( ID_GALLERY_TREEVIEW_BUTTON, &MainFrame::OnGalleryOrgTreeViewButton )
 	ON_COMMAND( ID_CREATEROOT_BUTTON, &MainFrame::OnCreateRootButton )
   ON_COMMAND( ID_CREATEDESCENDANT_BUTTON, &MainFrame::OnCreateDescendantButton )
 	ON_COMMAND( ID_CREATESIBLING_BUTTON, &MainFrame::OnCreateSiblingButton )
 	ON_COMMAND( ID_DELETE_BUTTON, &MainFrame::OnDeleteButton )
+	ON_COMMAND( ID_MYFAMILY_COMBO, &MainFrame::OnMyFamilyCombo )
+	ON_COMMAND( ID_RELATION_COMBO, &MainFrame::OnRelationCombo )
+	ON_COMMAND( ID_RELATIONGENDER_COMBO, &MainFrame::OnRelationGenderCombo )
+	ON_COMMAND( ID_GRANDPARENT_COMBO, &MainFrame::OnGrandParentCombo )
+	ON_COMMAND( ID_GREATGRANDPARENTGENDER_COMBO, &MainFrame::OnGreatGrandParentGenderCombo )
+	ON_COMMAND( ID_GREATGRANDPARENT_COMBO, &MainFrame::OnGreatGrandParentCombo )
+	ON_COMMAND( ID_CONTEXTSEARCH_BUTTON, &MainFrame::OnContextSearchButton )
 END_MESSAGE_MAP()
 
 // MainFrame construction/destruction
@@ -285,12 +292,12 @@ void MainFrame::OnLeftToRightOrgTreeViewButton()
 }
 
 
-void MainFrame::OnDownwardOrgTreeViewButton()
+void MainFrame::OnDownwardDescendantOrgTreeViewButton()
 {
 	SetOrgCtrlMode( COrgCtrlView::Mode::UpsideDownTree );
 }
 
-void MainFrame::OnUpwardOrgTreeViewButton()
+void MainFrame::OnUpwardAncestorOrgTreeViewButton()
 {
 	SetOrgCtrlMode( COrgCtrlView::Mode::Tree );
 }
@@ -335,6 +342,27 @@ void MainFrame::OnDeleteButton()
 		doc->DeleteNode();
 	}
 }
+
+void MainFrame::OnMyFamilyCombo()
+{}
+
+void MainFrame::OnRelationCombo()
+{}
+
+void MainFrame::OnRelationGenderCombo()
+{}
+
+void MainFrame::OnGrandParentCombo()
+{}
+
+void MainFrame::OnGreatGrandParentGenderCombo()
+{}
+
+void MainFrame::OnGreatGrandParentCombo()
+{}
+
+void MainFrame::OnContextSearchButton()
+{}
 
 	// CreateMainFrameContextNodeGridRow( const CString& uniqueAggregateNodeId, const CString& productionRuleString, DWORD parentCxNodeObjId, DWORD cxNodeObjId, DWORD cxNodeThreadId )
 	// uniqueAggregateNodeId = L"Boy@c0:627e:7f00:d5:d430:ef2d:23bd:26f0#57895#23", productionRuleString = L"( Wife? & Parents & Children* ) | CDATA )", parentCxNodeObjId = 0, cxNodeObjId = 1193322685, cxNodeThreadId = 75716

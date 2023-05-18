@@ -155,5 +155,11 @@
     <None Include="res\OrgTree.rc2">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Boy.dtd">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="MyFamily.dtd">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
