@@ -406,6 +406,7 @@ void MainFrame::OnContextSearchButton() {
 			if ( !sRelation.IsEmpty() ) {
 				context += L":";
 				if ( sRelation == S_PARENTS ) {
+					// "::" to proceed to the next node level (ancestors)
 					context += L":";
 				}
 				context += sRelation;
@@ -416,6 +417,7 @@ void MainFrame::OnContextSearchButton() {
 				if ( !sGrandParent.IsEmpty() ) {
 					context += L":";
 					if ( sGrandParent == S_PARENTS ) {
+						// "::" to proceed to the next node level (ancestors)
 						context += L":";
 					}
 					context += sGrandParent;

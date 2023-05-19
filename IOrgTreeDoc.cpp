@@ -104,9 +104,12 @@ void IOrgTreeDoc::GetChildrenByProperty( const POrgTreeDocNodeHandle & phParent,
 void IOrgTreeDoc::GetNodesByPath( const CStringArray & path, COrgTreeDocNodeHandleList & nodes, const POrgTreeDocNodeHandle & phStartNode, const int iListIndex ) const {
 	int list_index = iListIndex;
 	if ( list_index < path.GetCount() ) {
+		// there are still levels to search
 		bool bSkipNonMatchingLevels = false;
 		POrgTreeDocNodeHandle phNode = phStartNode;
 		if ( path.GetAt( 0 ).IsEmpty() && list_index < 2 ) {
+			// search path starts with a ":" (empty string)
+			// this means that the search can start at any node
 			bSkipNonMatchingLevels = true;
 			if ( list_index == 0 ) {
 				list_index = 1;
@@ -122,13 +125,17 @@ void IOrgTreeDoc::GetNodesByPath( const CStringArray & path, COrgTreeDocNodeHand
 			bool bMatch = true;
 			bool bDescend = false;
 			while ( bMatch && list_index < path.GetCount() ) {
+				// searching for matching value in the node properties for every token in the search path
 				CString value_to_search = path.GetAt( list_index );
 				if ( value_to_search.IsEmpty() ) {
+					// "::" (empty string) in a search path means that the search should descend to child nodes
 					bMatch = false;
 					bDescend = true;
 					list_index++;
 				} else {
 					bMatch = false;
+					// looking every property value in the node for a match
+					// do not match property values twice
 					for ( POSITION pos = properties.GetStartPosition(); pos != NULL; ) {
 						CString name, value;
 						properties.GetNextAssoc( pos, name, value );
@@ -136,7 +143,8 @@ void IOrgTreeDoc::GetNodesByPath( const CStringArray & path, COrgTreeDocNodeHand
 							matched_properties.find( name ) == matched_properties.end()
 							&&
 							value == value_to_search
-							) {
+						) {
+							// found a matching property value, go to next search path token
 							bMatch = true;
 							matched_properties[ name ] = true;
 							list_index++;
@@ -153,13 +161,13 @@ void IOrgTreeDoc::GetNodesByPath( const CStringArray & path, COrgTreeDocNodeHand
 			} else {
 				// not a terminal match node
 				if ( !bDescend && bSkipNonMatchingLevels ) {
-					// no match here, but skipping non-matching levels
+					// no match and descent here, but we are skipping non-matching levels
 					bDescend = true;
 					// start anew with the next level
 					list_index = iListIndex;
 				}
-				// not all properties matched, descending to children (if allowed)
 				if ( bDescend ) {
+					// descending to children
 					POrgTreeDocNodeHandle phChildNode;
 					while ( GetNextChildNode( phNode, phChildNode ) ) {
 						GetNodesByPath( path, nodes, phChildNode, list_index );
