@@ -104,7 +104,14 @@ void IOrgTreeDoc::GetChildrenByProperty( const POrgTreeDocNodeHandle & phParent,
 void IOrgTreeDoc::GetNodesByPath( const CStringArray & path, COrgTreeDocNodeHandleList & nodes, const POrgTreeDocNodeHandle & phStartNode, const int iListIndex ) const {
 	int list_index = iListIndex;
 	if ( list_index < path.GetCount() ) {
+		bool bSkipNonMatchingLevels = false;
 		POrgTreeDocNodeHandle phNode = phStartNode;
+		if ( path.GetAt( 0 ).IsEmpty() && list_index < 2 ) {
+			bSkipNonMatchingLevels = true;
+			if ( list_index == 0 ) {
+				list_index = 1;
+			}
+		}
 		if ( !phStartNode ) {
 			nodes.clear();
 		}
@@ -138,20 +145,24 @@ void IOrgTreeDoc::GetNodesByPath( const CStringArray & path, COrgTreeDocNodeHand
 					}
 				}
 			}
-			if ( matched_properties.size() == 0 ) {
-				// no properties matched at this node, so we can't match the following path
+			bool bPartialMatch = ( matched_properties.size() > 0 ); // some properties matched
+			if ( bPartialMatch && bMatch ) {
+				// all properties matched, this is a terminal match node
+				nodes.push_back( phNode );
+				bDescend = false;
 			} else {
-				// some properties matched
-				if ( bMatch ) {
-					// all properties matched, this is a terminal match node
-					nodes.push_back( phNode );
-				} else {
-					// not all properties matched, descending to children (if allowed)
-					if ( bDescend ) {
-						POrgTreeDocNodeHandle phChildNode;
-						while ( GetNextChildNode( phNode, phChildNode ) ) {
-							GetNodesByPath( path, nodes, phChildNode, list_index );
-						}
+				// not a terminal match node
+				if ( !bDescend && bSkipNonMatchingLevels ) {
+					// no match here, but skipping non-matching levels
+					bDescend = true;
+					// start anew with the next level
+					list_index = iListIndex;
+				}
+				// not all properties matched, descending to children (if allowed)
+				if ( bDescend ) {
+					POrgTreeDocNodeHandle phChildNode;
+					while ( GetNextChildNode( phNode, phChildNode ) ) {
+						GetNodesByPath( path, nodes, phChildNode, list_index );
 					}
 				}
 			}

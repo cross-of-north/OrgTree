@@ -51,8 +51,8 @@ BEGIN_MESSAGE_MAP(MainFrame, CFrameWndEx)
 	ON_COMMAND( ID_RELATION_COMBO, &MainFrame::OnRelationCombo )
 	ON_COMMAND( ID_RELATIONGENDER_COMBO, &MainFrame::OnRelationGenderCombo )
 	ON_COMMAND( ID_GRANDPARENT_COMBO, &MainFrame::OnGrandParentCombo )
-	ON_COMMAND( ID_GREATGRANDPARENTGENDER_COMBO, &MainFrame::OnGreatGrandParentGenderCombo )
-	ON_COMMAND( ID_GREATGRANDPARENT_COMBO, &MainFrame::OnGreatGrandParentCombo )
+	ON_COMMAND( ID_GRANDPARENTGENDER_COMBO, &MainFrame::OnGrandParentGenderCombo )
+	ON_COMMAND( ID_GRANDPARENTRRR_COMBO, &MainFrame::OnGrandParentRRRCombo )
 	ON_COMMAND( ID_CONTEXTSEARCH_BUTTON, &MainFrame::OnContextSearchButton )
 	ON_UPDATE_COMMAND_UI( ID_MYFAMILY_COMBO, &MainFrame::OnUpdateMyfamilyCombo )
 END_MESSAGE_MAP()
@@ -357,10 +357,10 @@ void MainFrame::OnRelationGenderCombo()
 void MainFrame::OnGrandParentCombo()
 {}
 
-void MainFrame::OnGreatGrandParentGenderCombo()
+void MainFrame::OnGrandParentGenderCombo()
 {}
 
-void MainFrame::OnGreatGrandParentCombo()
+void MainFrame::OnGrandParentRRRCombo()
 {}
 
 void CleanComboString( CString & combo_string ) {
@@ -393,15 +393,55 @@ void MainFrame::OnContextSearchButton() {
 		COMBO_BY_ID( Relation, ID_RELATION_COMBO );
 		COMBO_BY_ID( RelationGender, ID_RELATIONGENDER_COMBO );
 		COMBO_BY_ID( GrandParent, ID_GRANDPARENT_COMBO );
-		COMBO_BY_ID( GreatGrandParentGender, ID_GRANDPARENTGENDER_COMBO );
-		COMBO_BY_ID( GreatGrandParent, ID_GRANDPARENTRRR_COMBO );
+		COMBO_BY_ID( GrandParentGender, ID_GRANDPARENTGENDER_COMBO );
+		COMBO_BY_ID( GrandParentRRR, ID_GRANDPARENTRRR_COMBO );
 		CleanComboString( sMyFamily );
-		CString context( sMyFamily + L"::" + sRelation + L":" + sRelationGender + L"::" + sGrandParent + L":" + sGreatGrandParentGender + L":" + sGreatGrandParent );
-		CStringArray arContext;
-		CString path = L"MyFamily::Parents:Paternal::Parents:Maternal:Wife";
+		CString context;
+		if ( !sMyFamily.IsEmpty() ) {
+			if ( sMyFamily != S_MYFAMILY ) {
+				//match path from any named node instead of root
+				sMyFamily = L":" + sMyFamily;
+			}
+			context += sMyFamily;
+			if ( !sRelation.IsEmpty() ) {
+				context += L":";
+				if ( sRelation == S_PARENTS ) {
+					context += L":";
+				}
+				context += sRelation;
+				if ( !sRelationGender.IsEmpty() ) {
+					context += L":";
+					context += sRelationGender;
+				}
+				if ( !sGrandParent.IsEmpty() ) {
+					context += L":";
+					if ( sGrandParent == S_PARENTS ) {
+						context += L":";
+					}
+					context += sGrandParent;
+					if ( !sGrandParentGender.IsEmpty() ) {
+						context += L":";
+						context += sGrandParentGender;
+					}
+					if ( !sGrandParentRRR.IsEmpty() ) {
+						context += L":";
+						context += sGrandParentRRR;
+					}
+				}
+            }
+		}
+		//context = L"MyFamily::Parents:Paternal::Parents:Maternal:Wife";
 		COrgTreeDocNodeHandleList nodes;
-		doc->GetNodesByPath( path, nodes );
-		context.Empty();
+		doc->GetNodesByPath( context, nodes );
+		POrgTreeDocNodeHandle phOldNode;
+		if ( doc->GetFocusedNode( phOldNode ) ) {
+			doc->SetNodeFocus( phOldNode, false );
+		}
+		if ( nodes.size() > 0 ) {
+			doc->SetNodeFocus( nodes[ 0 ], true );
+			Invalidate();
+		}
+		Invalidate();
 	}
 }
 
@@ -417,25 +457,26 @@ void MainFrame::OnUpdateMyfamilyCombo( CCmdUI * pCmdUI ) {
 	OrgTreeDoc * doc = GetDocument();
 	COMBO_BY_ID( MyFamily, ID_MYFAMILY_COMBO );
 	if ( doc != NULL && pMyFamilyCombo != NULL ) {
-		bool bMatch = true;
 		COrgTreeDocNodeHandleList nodes;
 		doc->GetAllNodes( nodes );
+		bool bMatch = ( nodes.size() + 1 == pMyFamilyCombo->GetCount() );
 		auto it = nodes.begin();
-		for ( auto i = 0; i < pMyFamilyCombo->GetCount() && it != nodes.end() && bMatch; i++ ) {
+		for ( auto i = 1; i < pMyFamilyCombo->GetCount() && it != nodes.end() && bMatch; i++ ) {
 			CString combo_string( pMyFamilyCombo->GetItem( i ) );
 			CleanComboString( combo_string );
 			CString node_string;
 			doc->GetNodeProperty( *it, S_NAME, node_string );
-            bMatch = ( combo_string == node_string );
-            it++;
-        }
+			bMatch = ( combo_string == node_string );
+			it++;
+		}
 		if ( !bMatch ) {
 			pMyFamilyCombo->RemoveAllItems();
+			pMyFamilyCombo->AddItem( S_MYFAMILY );
 			int i = 1;
 			for ( auto it = nodes.begin(); it != nodes.end(); it++ ) {
 				CString node_string;
 				doc->GetNodeProperty( *it, S_NAME, node_string );
-				node_string.Format( L"%d. %s", i, node_string );
+				node_string.Format( L"%d. %s", i, node_string.GetString() );
 				pMyFamilyCombo->AddItem( node_string );
 				i++;
 			}

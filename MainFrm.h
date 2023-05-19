@@ -81,8 +81,8 @@ public:
 	afx_msg void OnRelationCombo();
 	afx_msg void OnRelationGenderCombo();
 	afx_msg void OnGrandParentCombo();
-	afx_msg void OnGreatGrandParentGenderCombo();
-	afx_msg void OnGreatGrandParentCombo();
+	afx_msg void OnGrandParentGenderCombo();
+	afx_msg void OnGrandParentRRRCombo();
 	afx_msg void OnContextSearchButton();
 	afx_msg void OnUpdateMyfamilyCombo( CCmdUI * pCmdUI );
 };

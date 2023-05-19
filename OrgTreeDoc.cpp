@@ -48,8 +48,8 @@ OrgTreeDoc::~OrgTreeDoc()
 }
 
 // until layout is implemented, we use fixed parameters
-#define NODE_WIDTH 40
-#define NODE_HEIGHT 20
+#define NODE_WIDTH 60
+#define NODE_HEIGHT 30
 #define NODE_HSPACE 40
 #define NODE_VSPACE 5
 #define NODE_HSPAN ( NODE_WIDTH + NODE_HSPACE )

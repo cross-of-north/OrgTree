@@ -62,7 +62,7 @@ void COrgCtrlPainter::PaintNode( const POrgTreeDocNodeHandle & phNode, const int
     m_document.SetNodeScreenRect( phNode, node_rect );
     if ( m_document.GetNodeFocus( phNode ) ) {
         SetupNodePainting( true );
-        for ( int i = 2; i > 0; i-- ) {
+        for ( int i = 4; i > 0; i-- ) {
             CRect rect = node_rect;
             rect.TopLeft().x -= i;
             rect.TopLeft().y -= i;
