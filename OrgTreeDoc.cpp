@@ -96,7 +96,7 @@ public:
 
 		top += NODE_VSPAN * 8;
 
-		COrgCtrlDataItem::ptr_t node2 = CreateNode( L"Johanna", S_PARENTS, S_MATERNAL, S_HUSBAND, pRoot );
+		COrgCtrlDataItem::ptr_t node2 = CreateNode( L"Johanna", S_PARENTS, S_MATERNAL, S_WIFE, pRoot );
 
 		left += NODE_HSPAN;
 		top -= NODE_VSPAN * 10;
@@ -105,7 +105,7 @@ public:
 
 		top += NODE_VSPAN * 4;
 
-		COrgCtrlDataItem::ptr_t node12 = CreateNode( L"Elizabeth", S_PARENTS, S_MATERNAL, S_HUSBAND, node1 );
+		COrgCtrlDataItem::ptr_t node12 = CreateNode( L"Elizabeth", S_PARENTS, S_MATERNAL, S_WIFE, node1 );
 
 		top += NODE_VSPAN * 4;
 
@@ -113,7 +113,7 @@ public:
 
 		top += NODE_VSPAN * 4;
 
-		COrgCtrlDataItem::ptr_t node22 = CreateNode( L"Wilhemena", S_PARENTS, S_MATERNAL, S_HUSBAND, node2 );
+		COrgCtrlDataItem::ptr_t node22 = CreateNode( L"Wilhemena", S_PARENTS, S_MATERNAL, S_WIFE, node2 );
 
 		left += NODE_HSPAN;
 		top -= NODE_VSPAN * 13;
@@ -122,7 +122,7 @@ public:
 
 		top += NODE_VSPAN * 2;
 
-		COrgCtrlDataItem::ptr_t node112 = CreateNode( L"M", S_PARENTS, S_MATERNAL, S_HUSBAND, node11 );
+		COrgCtrlDataItem::ptr_t node112 = CreateNode( L"M", S_PARENTS, S_MATERNAL, S_WIFE, node11 );
 
 		top += NODE_VSPAN * 2;
 
@@ -130,7 +130,7 @@ public:
 
 		top += NODE_VSPAN * 2;
 
-		COrgCtrlDataItem::ptr_t node122 = CreateNode( L"M", S_PARENTS, S_MATERNAL, S_HUSBAND, node12 );
+		COrgCtrlDataItem::ptr_t node122 = CreateNode( L"M", S_PARENTS, S_MATERNAL, S_WIFE, node12 );
 
 		top += NODE_VSPAN * 2;
 
@@ -565,6 +565,17 @@ bool OrgTreeDoc::GetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wc
 		bResult = node->GetInt( strName, iValue );
 	}
 	return bResult;
+}
+
+void OrgTreeDoc::GetNodeProperties( const POrgTreeDocNodeHandle & phNode, CMapStringToString & properties ) const {
+	properties.RemoveAll();
+	COrgCtrlDataItem * node = NULL;
+	FromNodeHandle( phNode, node );
+	ASSERT( node != NULL );
+	auto nodeProperties = node->GetProperties();
+	for ( auto it = nodeProperties.begin(); it != nodeProperties.end(); it++ ) {
+        properties.SetAt( it->first.c_str(), it->second.c_str() );
+    }
 }
 
 int OrgTreeDoc::GetOrderHint( const COrgCtrlDataItem & node ) const {

@@ -35,6 +35,7 @@ public:
     virtual bool GetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, CString & strValue ) const = 0;
     virtual void SetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, const __int64 iValue ) = 0;
     virtual bool GetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, __int64 & iValue ) const = 0;
+    virtual void GetNodeProperties( const POrgTreeDocNodeHandle & phNode, CMapStringToString & properties ) const = 0;
 
     // traits
     bool HitTest( const CPoint & point, POrgTreeDocNodeHandle & phHitNode, const bool bScreenCoords = true ) const;
@@ -44,5 +45,7 @@ public:
     void SetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, const wchar_t * strValue );
     void GetAllNodes( COrgTreeDocNodeHandleList & nodes, const POrgTreeDocNodeHandle & phStartNode = NULL ) const;
     void GetChildrenByProperty( const POrgTreeDocNodeHandle & phParent, const wchar_t * strName, const CString & strValue, COrgTreeDocNodeHandleList & children ) const;
+    void GetNodesByPath( const CStringArray & path, COrgTreeDocNodeHandleList & nodes, const POrgTreeDocNodeHandle & phStartNode = NULL, const int iListIndex = 0 ) const;
+    void GetNodesByPath( const CString & path, COrgTreeDocNodeHandleList & nodes ) const;
 
 };

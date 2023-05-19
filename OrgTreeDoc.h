@@ -104,6 +104,7 @@ public:
 	virtual bool GetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, CString & strValue ) const;
 	virtual void SetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, const __int64 iValue );
 	virtual bool GetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, __int64 & iValue ) const;
+	virtual void GetNodeProperties( const POrgTreeDocNodeHandle & phNode, CMapStringToString & properties ) const;
 
 protected:
 

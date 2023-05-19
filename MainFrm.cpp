@@ -387,15 +387,22 @@ void CleanComboString( CString & combo_string ) {
 	}
 
 void MainFrame::OnContextSearchButton() {
-	COMBO_BY_ID( MyFamily, ID_MYFAMILY_COMBO );
-	COMBO_BY_ID( Relation, ID_RELATION_COMBO );
-	COMBO_BY_ID( RelationGender, ID_RELATIONGENDER_COMBO );
-	COMBO_BY_ID( GrandParent, ID_GRANDPARENT_COMBO );
-	COMBO_BY_ID( GreatGrandParentGender, ID_GREATGRANDPARENTGENDER_COMBO );
-	COMBO_BY_ID( GreatGrandParent, ID_GREATGRANDPARENT_COMBO );
-	CleanComboString( sMyFamily );
-	CString context( sMyFamily + L":" + sRelation + L":" + sRelationGender + L":" + sGrandParent + L":" + sGreatGrandParentGender + L":" + sGreatGrandParent );
-	context.Empty();
+	OrgTreeDoc * doc = GetDocument();
+	if ( doc != NULL ) {
+		COMBO_BY_ID( MyFamily, ID_MYFAMILY_COMBO );
+		COMBO_BY_ID( Relation, ID_RELATION_COMBO );
+		COMBO_BY_ID( RelationGender, ID_RELATIONGENDER_COMBO );
+		COMBO_BY_ID( GrandParent, ID_GRANDPARENT_COMBO );
+		COMBO_BY_ID( GreatGrandParentGender, ID_GRANDPARENTGENDER_COMBO );
+		COMBO_BY_ID( GreatGrandParent, ID_GRANDPARENTRRR_COMBO );
+		CleanComboString( sMyFamily );
+		CString context( sMyFamily + L"::" + sRelation + L":" + sRelationGender + L"::" + sGrandParent + L":" + sGreatGrandParentGender + L":" + sGreatGrandParent );
+		CStringArray arContext;
+		CString path = L"MyFamily::Parents:Paternal::Parents:Maternal:Wife";
+		COrgTreeDocNodeHandleList nodes;
+		doc->GetNodesByPath( path, nodes );
+		context.Empty();
+	}
 }
 
 	// CreateMainFrameContextNodeGridRow( const CString& uniqueAggregateNodeId, const CString& productionRuleString, DWORD parentCxNodeObjId, DWORD cxNodeObjId, DWORD cxNodeThreadId )

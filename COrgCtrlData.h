@@ -19,6 +19,7 @@ public:
     const COrgCtrlDataItem * GetParent() const { return m_pParent; }
     COrgCtrlDataItem * GetParent() { return m_pParent; }
     void SetParent( COrgCtrlDataItem * pParent ) { m_pParent = pParent; }
+    const properties_t & GetProperties() { return m_properties; }
     void AddChild( const ptr_t & pChild );
     void RemoveChild( ptr_t & pChild );
     void Delete();
