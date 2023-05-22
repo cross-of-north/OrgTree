@@ -28,6 +28,8 @@ public:
     virtual void SetNodeScreenRect( const POrgTreeDocNodeHandle & phNode, const CRect & rect ) const = 0;
     virtual void SetNodeFocus( const POrgTreeDocNodeHandle & phNode, const bool bFocus ) const = 0;
     virtual bool GetNodeFocus( const POrgTreeDocNodeHandle & phNode ) const = 0;
+    virtual bool IsNodeVisible( const POrgTreeDocNodeHandle & phNode ) const = 0;
+    virtual void SetNodeVisible( const POrgTreeDocNodeHandle & phNode, const bool bVisible ) const = 0;
     virtual bool GetLastChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phChild ) const = 0;
     virtual bool GetParentNode( const POrgTreeDocNodeHandle & phNode, POrgTreeDocNodeHandle & phParent ) const = 0;
     virtual void DeleteNode( POrgTreeDocNodeHandle & phNode ) = 0;

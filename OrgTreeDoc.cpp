@@ -49,36 +49,86 @@ OrgTreeDoc::~OrgTreeDoc()
 
 // until layout is implemented, we use fixed parameters
 #define NODE_WIDTH 60
+#define SUBNODE_WIDTH 20
 #define NODE_HEIGHT 30
+#define SUBNODE_HEIGHT 10
 #define NODE_HSPACE 40
 #define NODE_VSPACE 5
+#define SUBNODE_HSPACE 5
+#define SUBNODE_VSPACE 5
 #define NODE_HSPAN ( NODE_WIDTH + NODE_HSPACE )
 #define NODE_VSPAN ( NODE_HEIGHT + NODE_VSPACE )
 
 #define STARTX 50
 #define STARTY 50
 #define NODE_RECT { left, top, left + NODE_WIDTH, top + NODE_HEIGHT }
+#define SUBNODE_RECT { left + subnode_left, top + subnode_top + NODE_HEIGHT + SUBNODE_VSPACE, left + subnode_left + SUBNODE_WIDTH, top + subnode_top + NODE_HEIGHT + SUBNODE_VSPACE + SUBNODE_HEIGHT }
 class CTreeExampleBuilder {
 public:
 	int left{ STARTX };
 	int top{ STARTY + 7 * NODE_VSPAN };
+	int subnode_left{ 0 };
+	int subnode_top{ 0 };
 	OrgTreeDoc & doc;
 	
 	CTreeExampleBuilder( OrgTreeDoc & doc_ ) : doc( doc_ ) {}
 	
 	COrgCtrlDataItem::ptr_t CreateNode(
 		const wchar_t * name,
-		const wchar_t * relation,
-		const wchar_t * relation_gender,
-		const wchar_t * rrr,
+		const wchar_t * type,
 		const COrgCtrlDataItem::ptr_t & parent = NULL
 	) {
+		ASSERT( type == S_HUSBAND || type == S_WIFE || type == S_MYFAMILY );
+
+		COrgCtrlDataItem * pParentsNode = NULL;
+
+		if ( parent ) {
+			POrgTreeDocNodeHandle phParent;
+			doc.GetNodeHandle( parent.get(), phParent );
+			COrgTreeDocNodeHandleList children;
+			doc.GetChildrenByProperty( phParent, S_TYPE, S_PARENTS, children );
+			ASSERT( children.size() == 1 );
+			if ( children.size() > 0 ) {
+				doc.FromNodeHandle( children[ 0 ], pParentsNode );
+			}
+		}
+
+		const wchar_t * parent_type( type == S_MYFAMILY ? S_MYFAMILY : (
+			type == S_HUSBAND ? S_PATERNAL : S_MATERNAL
+		) );
+		subnode_left = 0;
+		COrgCtrlDataItem::ptr_t pPaternalMaternalNode = CreateSubNode( parent_type, pParentsNode );
+		subnode_top += SUBNODE_VSPACE + SUBNODE_HEIGHT;
+		//subnode_left += SUBNODE_HSPACE + SUBNODE_WIDTH;
+		COrgCtrlDataItem::ptr_t pHusbandNode = CreateSubNode( S_HUSBAND, pPaternalMaternalNode.get() );
+		subnode_left += SUBNODE_HSPACE + SUBNODE_WIDTH;
+		COrgCtrlDataItem::ptr_t pWifeNode = CreateSubNode( S_WIFE, pPaternalMaternalNode.get() );
+		subnode_left += SUBNODE_HSPACE + SUBNODE_WIDTH;
+		CreateSubNode( S_CHILDREN, pPaternalMaternalNode.get() );
+		subnode_left += SUBNODE_HSPACE + SUBNODE_WIDTH;
+		CreateSubNode( S_PARENTS, pPaternalMaternalNode.get() );
+
+		COrgCtrlDataItem::ptr_t pNamedNode = 
+			( type == S_MYFAMILY ) ? 
+			pPaternalMaternalNode : 
+			( type == S_HUSBAND ? pHusbandNode : pWifeNode );
+
+		doc.SetNodeRect( *pNamedNode, NODE_RECT );
+		doc.SetNodeProperty( *pNamedNode, S_NAME, name );
+		POrgTreeDocNodeHandle phNamedNode;
+		doc.GetNodeHandle( pNamedNode.get(), phNamedNode );
+		doc.SetNodeVisible( phNamedNode, true );
+
+		return pPaternalMaternalNode;
+	}
+
+	COrgCtrlDataItem::ptr_t CreateSubNode(
+		const wchar_t * type,
+		COrgCtrlDataItem * parent
+	) {
 		COrgCtrlDataItem::ptr_t pNode = std::make_shared< COrgCtrlDataItem >();
-		doc.SetNodeRect( *pNode, NODE_RECT );
-		doc.SetNodeProperty( *pNode, S_NAME, name );
-		doc.SetNodeProperty( *pNode, S_RELATION, relation );
-		doc.SetNodeProperty( *pNode, S_RELATION_GENDER, relation_gender );
-		doc.SetNodeProperty( *pNode, S_RRR, rrr );
+		doc.SetNodeRect( *pNode, SUBNODE_RECT );
+		doc.SetNodeProperty( *pNode, S_TYPE, type );
 		if ( parent ) {
 			parent->AddChild( pNode );
 		}
@@ -87,54 +137,54 @@ public:
 
 	COrgCtrlDataItem::ptr_t Build() {
 
-		COrgCtrlDataItem::ptr_t pRoot = CreateNode( L"Robert George", S_MYFAMILY, L"", L"" );
+		COrgCtrlDataItem::ptr_t pRoot = CreateNode( L"Robert George", S_MYFAMILY );
 
 		left += NODE_HSPAN;
 		top -= NODE_VSPAN * 4;
 
-		COrgCtrlDataItem::ptr_t node1 = CreateNode( L"Fred", S_PARENTS, S_PATERNAL, S_HUSBAND, pRoot );
+		COrgCtrlDataItem::ptr_t node1 = CreateNode( L"Fred", S_HUSBAND, pRoot );
 
 		top += NODE_VSPAN * 8;
 
-		COrgCtrlDataItem::ptr_t node2 = CreateNode( L"Johanna", S_PARENTS, S_MATERNAL, S_WIFE, pRoot );
+		COrgCtrlDataItem::ptr_t node2 = CreateNode( L"Johanna", S_WIFE, pRoot );
 
 		left += NODE_HSPAN;
 		top -= NODE_VSPAN * 10;
 
-		COrgCtrlDataItem::ptr_t node11 = CreateNode( L"Urs", S_PARENTS, S_PATERNAL, S_HUSBAND, node1 );
+		COrgCtrlDataItem::ptr_t node11 = CreateNode( L"Urs", S_HUSBAND, node1 );
 
 		top += NODE_VSPAN * 4;
 
-		COrgCtrlDataItem::ptr_t node12 = CreateNode( L"Elizabeth", S_PARENTS, S_MATERNAL, S_WIFE, node1 );
+		COrgCtrlDataItem::ptr_t node12 = CreateNode( L"Elizabeth", S_WIFE, node1 );
 
 		top += NODE_VSPAN * 4;
 
-		COrgCtrlDataItem::ptr_t node21 = CreateNode( L"Charles", S_PARENTS, S_PATERNAL, S_HUSBAND, node2 );
+		COrgCtrlDataItem::ptr_t node21 = CreateNode( L"Charles", S_HUSBAND, node2 );
 
 		top += NODE_VSPAN * 4;
 
-		COrgCtrlDataItem::ptr_t node22 = CreateNode( L"Wilhemena", S_PARENTS, S_MATERNAL, S_WIFE, node2 );
+		COrgCtrlDataItem::ptr_t node22 = CreateNode( L"Wilhemena", S_WIFE, node2 );
 
 		left += NODE_HSPAN;
 		top -= NODE_VSPAN * 13;
 
-		COrgCtrlDataItem::ptr_t node111 = CreateNode( L"E", S_PARENTS, S_PATERNAL, S_HUSBAND, node11 );
+		COrgCtrlDataItem::ptr_t node111 = CreateNode( L"E", S_HUSBAND, node11 );
 
 		top += NODE_VSPAN * 2;
 
-		COrgCtrlDataItem::ptr_t node112 = CreateNode( L"M", S_PARENTS, S_MATERNAL, S_WIFE, node11 );
+		COrgCtrlDataItem::ptr_t node112 = CreateNode( L"M", S_WIFE, node11 );
 
 		top += NODE_VSPAN * 2;
 
-		COrgCtrlDataItem::ptr_t node121 = CreateNode( L"H", S_PARENTS, S_PATERNAL, S_HUSBAND, node12 );
+		COrgCtrlDataItem::ptr_t node121 = CreateNode( L"H", S_HUSBAND, node12 );
 
 		top += NODE_VSPAN * 2;
 
-		COrgCtrlDataItem::ptr_t node122 = CreateNode( L"M", S_PARENTS, S_MATERNAL, S_WIFE, node12 );
+		COrgCtrlDataItem::ptr_t node122 = CreateNode( L"M", S_WIFE, node12 );
 
 		top += NODE_VSPAN * 2;
 
-		COrgCtrlDataItem::ptr_t node211 = CreateNode( L"?", S_PARENTS, S_PATERNAL, S_HUSBAND, node21 );
+		COrgCtrlDataItem::ptr_t node211 = CreateNode( L"?", S_HUSBAND, node21 );
 
 		return pRoot;
 	}
@@ -430,6 +480,7 @@ void OrgTreeDoc::DeleteNode() {
 #define RECT_BOTTOM L"__rect.bottom"
 #define RECT_RIGHT L"__rect.right"
 #define FOCUS L"__focus"
+#define VISIBLE L"__visible"
 #define ORDER_HINT L"__order_hint"
 
 const CRect OrgTreeDoc::GetNodeScreenRect( const POrgTreeDocNodeHandle & phNode ) const {
@@ -501,25 +552,41 @@ void OrgTreeDoc::SetNodeRect( POrgTreeDocNodeHandle & phNode, const CRect & rect
 	ASSERT( node != NULL );
 }
 
-void OrgTreeDoc::SetNodeFocus( const POrgTreeDocNodeHandle & phNode, const bool bFocus ) const {
+void OrgTreeDoc::SetNodeFlag( const POrgTreeDocNodeHandle & phNode, const bool bValue, const wchar_t * name ) const {
 	COrgCtrlDataItem * node = NULL;
 	if ( FromNodeHandle( phNode, node ) ) {
-		node->SetInt( FOCUS, bFocus ? 1 : 0 );
+		node->SetInt( name, bValue ? 1 : 0 );
 	}
 	ASSERT( node != NULL );
 }
 
-bool OrgTreeDoc::GetNodeFocus( const POrgTreeDocNodeHandle & phNode ) const {
+bool OrgTreeDoc::GetNodeFlag( const POrgTreeDocNodeHandle & phNode, const wchar_t * name ) const {
 	COrgCtrlDataItem * node = NULL;
 	FromNodeHandle( phNode, node );
 	ASSERT( node != NULL );
 	bool bResult = false;
 	if ( node != NULL ) {
 		__int64 result{ 0 };
-		node->GetInt( FOCUS, result );
+		node->GetInt( name, result );
 		bResult = ( result != 0 );
 	}
 	return bResult;
+}
+
+void OrgTreeDoc::SetNodeFocus( const POrgTreeDocNodeHandle & phNode, const bool bFocus ) const {
+	SetNodeFlag( phNode, bFocus, FOCUS );
+}
+
+bool OrgTreeDoc::GetNodeFocus( const POrgTreeDocNodeHandle & phNode ) const {
+	return GetNodeFlag( phNode, FOCUS );
+}
+
+bool OrgTreeDoc::IsNodeVisible( const POrgTreeDocNodeHandle & phNode ) const {
+	return GetNodeFlag( phNode, VISIBLE );
+}
+
+void OrgTreeDoc::SetNodeVisible( const POrgTreeDocNodeHandle & phNode, const bool bVisible ) const {
+	SetNodeFlag( phNode, bVisible, VISIBLE );
 }
 
 void OrgTreeDoc::SetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, const CString & strValue ) {

@@ -89,6 +89,9 @@ public:
 	void SetNodeRect( COrgCtrlDataItem & node, const CRect & rect );
 	void SetNodeProperty( COrgCtrlDataItem & node, const wchar_t * strName, const CString & strValue );
 
+	void GetNodeHandle( COrgCtrlDataItem * node, POrgTreeDocNodeHandle & phNode ) const;
+	static bool FromNodeHandle( const POrgTreeDocNodeHandle & phNode, COrgCtrlDataItem *& node );
+
 	virtual bool GetRootNode( POrgTreeDocNodeHandle & phNode ) const;
 	virtual bool GetNextChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phChild ) const;
 	virtual const CRect GetNodeRect( const POrgTreeDocNodeHandle & phNode ) const;
@@ -97,6 +100,8 @@ public:
 	virtual void SetNodeScreenRect( const POrgTreeDocNodeHandle & phNode, const CRect & rect ) const;
 	virtual void SetNodeFocus( const POrgTreeDocNodeHandle & phNode, const bool bFocus ) const;
 	virtual bool GetNodeFocus( const POrgTreeDocNodeHandle & phNode ) const;
+	virtual bool IsNodeVisible( const POrgTreeDocNodeHandle & phNode ) const;
+	virtual void SetNodeVisible( const POrgTreeDocNodeHandle & phNode, const bool bVisible ) const;
 	virtual bool GetLastChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phLastChild ) const;
 	virtual bool GetParentNode( const POrgTreeDocNodeHandle & phNode, POrgTreeDocNodeHandle & phParent ) const;
 	virtual void DeleteNode( POrgTreeDocNodeHandle & phNode );
@@ -112,11 +117,11 @@ protected:
 
 	COrgCtrlData::ptr_t m_data;
 
-	void GetNodeHandle( COrgCtrlDataItem * node, POrgTreeDocNodeHandle & phNode ) const;
-	static bool FromNodeHandle( const POrgTreeDocNodeHandle & phNode, COrgCtrlDataItem * & node );
 	int GetOrderHint( const COrgCtrlDataItem & node ) const;
 	void SetOrderHint( COrgCtrlDataItem & node, int orderHint ) const;
 	void ResetOrderHints( COrgCtrlDataItem & node );
+	bool GetNodeFlag( const POrgTreeDocNodeHandle & phNode, const wchar_t * name ) const;
+	void SetNodeFlag( const POrgTreeDocNodeHandle & phNode, const bool bValue, const wchar_t * name ) const;
 
 	// Generated message map functions
 protected:

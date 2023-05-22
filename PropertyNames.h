@@ -1,6 +1,7 @@
 #pragma once
 
 #define S_NAME L"name"
+#define S_TYPE L"type"
 #define S_RELATION L"relation"
 #define S_PARENTS L"Parents"
 #define S_MYFAMILY L"MyFamily"
@@ -10,3 +11,4 @@
 #define S_RRR L"rrr"
 #define S_HUSBAND L"Husband"
 #define S_WIFE L"Wife"
+#define S_CHILDREN L"Children"
