@@ -40,63 +40,66 @@ void COrgCtrlPainter::Paint( void ) {
         m_view.SetDataRect( m_rcDataBorders );
         {
             int iCount = 0;
-            PaintLinks( phFirstNode, 0, 0, iCount );
+            m_iDepth = 0;
+            PaintLinks( phFirstNode, 0, iCount );
         }
         {
             int iCount = 0;
-            PaintNode( phFirstNode, 0, 0, iCount );
+            m_iDepth = 0;
+            PaintNode( phFirstNode, 0, iCount );
         }
     }
 }
 
-void COrgCtrlPainter::PaintLinks( const POrgTreeDocNodeHandle & phNode, const int iDepth, const int iOrder, int & iCount ) {
+void COrgCtrlPainter::PaintLinks( const POrgTreeDocNodeHandle & phNode, const int iOrder, int & iCount ) {
     bool bVisible = m_document.IsNodeVisible( phNode );
     CRect node_rect;
-    int iChildDepth = iDepth;
     int iChildOrder = 0;
     if ( bVisible ) {
-        node_rect = m_view.ToViewRect( m_document.GetNodeRect( phNode ), iDepth, iOrder, iCount );
+        node_rect = m_view.ToViewRect( m_document.GetNodeRect( phNode ), m_iDepth, iOrder, iCount );
         m_ptVisibleParent = node_rect.CenterPoint();
         iCount++;
         ASSERT( !node_rect.IsRectEmpty() );
-        iChildDepth++;
+        m_iDepth++;
     }
 
     POrgTreeDocNodeHandle phChildNode;
-    CPoint prev_visible_parent;
-    prev_visible_parent = m_ptVisibleParent;
+    CPoint prev_visible_parent( m_ptVisibleParent );
+    int iOldDepth = m_iDepth;
     while ( m_document.GetNextChildNode( phNode, phChildNode ) ) {
         bool bChildVisible = m_document.IsNodeVisible( phChildNode );
         if ( bChildVisible ) {
-            const CRect child_rect = m_view.ToViewRect( m_document.GetNodeRect( phChildNode ), iChildDepth, iChildOrder, iCount );
+            const CRect child_rect = m_view.ToViewRect( m_document.GetNodeRect( phChildNode ), m_iDepth, iChildOrder, iCount );
             m_dc.MoveTo( m_ptVisibleParent );
             m_dc.LineTo( child_rect.left + child_rect.Width() / 2, child_rect.top + child_rect.Height() / 2 );
         }
-        PaintLinks( phChildNode, iChildDepth, iChildOrder, iCount );
+        PaintLinks( phChildNode, iChildOrder, iCount );
     }
     m_ptVisibleParent = prev_visible_parent;
+    m_iDepth = iOldDepth;
 }
 
-void COrgCtrlPainter::PaintNode( const POrgTreeDocNodeHandle & phNode, const int iDepth, const int iOrder, int & iCount ) {
+void COrgCtrlPainter::PaintNode( const POrgTreeDocNodeHandle & phNode, const int iOrder, int & iCount ) {
     bool bVisible = m_document.IsNodeVisible( phNode );
     CRect node_rect;
-    int iChildDepth = iDepth;
     int iChildOrder = 0;
     if ( bVisible ) {
-        node_rect = m_view.ToViewRect( m_document.GetNodeRect( phNode ), iDepth, iOrder, iCount );
+        node_rect = m_view.ToViewRect( m_document.GetNodeRect( phNode ), m_iDepth, iOrder, iCount );
         iCount++;
         ASSERT( !node_rect.IsRectEmpty() );
-        iChildDepth++;
+        m_iDepth++;
     }
 
+    int iOldDepth = m_iDepth;
     POrgTreeDocNodeHandle phChildNode;
     while ( m_document.GetNextChildNode( phNode, phChildNode ) ) {
         bool bChildVisible = m_document.IsNodeVisible( phChildNode );
-        PaintNode( phChildNode, iChildDepth, iChildOrder, iCount );
+        PaintNode( phChildNode, iChildOrder, iCount );
         if ( bChildVisible ) {
             iChildOrder++;
         }
     }
+    m_iDepth = iOldDepth;
 
     if ( bVisible ) {
         m_document.SetNodeScreenRect( phNode, node_rect );
@@ -112,8 +115,6 @@ void COrgCtrlPainter::PaintNode( const POrgTreeDocNodeHandle & phNode, const int
             }
             SetupNodePainting( false );
         }
-        CBrush brush( 0xFFFFFFFF );
-        m_dc.FillRect( node_rect, &brush );
         m_dc.Rectangle( node_rect );
         CString s;
         if ( m_document.GetNodeProperty( phNode, S_NAME, s ) ) {
