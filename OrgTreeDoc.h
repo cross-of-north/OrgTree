@@ -103,7 +103,7 @@ public:
 	virtual bool IsNodeVisible( const POrgTreeDocNodeHandle & phNode ) const;
 	virtual void SetNodeVisible( const POrgTreeDocNodeHandle & phNode, const bool bVisible ) const;
 	virtual bool GetLastChildNode( const POrgTreeDocNodeHandle & phParent, POrgTreeDocNodeHandle & phLastChild ) const;
-	virtual bool GetParentNode( const POrgTreeDocNodeHandle & phNode, POrgTreeDocNodeHandle & phParent ) const;
+	virtual bool GetNodeParent( const POrgTreeDocNodeHandle & phNode, POrgTreeDocNodeHandle & phParent ) const;
 	virtual void DeleteNode( POrgTreeDocNodeHandle & phNode );
 	virtual void SetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, const CString & strValue );
 	virtual bool GetNodeProperty( const POrgTreeDocNodeHandle & phNode, const wchar_t * strName, CString & strValue ) const;

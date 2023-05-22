@@ -270,7 +270,7 @@ bool OrgTreeDoc::GetLastChildNode( const POrgTreeDocNodeHandle & phParent, POrgT
 	return phLastChild && ( static_cast < OrgTreeDocNodeHandle & > ( *phLastChild ) ).IsValid();
 }
 
-bool OrgTreeDoc::GetParentNode( const POrgTreeDocNodeHandle & phNode, POrgTreeDocNodeHandle & phParent ) const {
+bool OrgTreeDoc::GetNodeParent( const POrgTreeDocNodeHandle & phNode, POrgTreeDocNodeHandle & phParent ) const {
 	phParent = NULL;
 	COrgCtrlDataItem * node = NULL;
 	if ( FromNodeHandle( phNode, node ) ) {
@@ -402,6 +402,9 @@ bool OrgTreeDoc::CreateContextNode( const CString & uniqueAggregateNodeId, const
 	int left = STARTX;
 	int top = STARTY;
 	SetNodeRect( *pNode, NODE_RECT );
+	POrgTreeDocNodeHandle phNode;
+	GetNodeHandle( pNode.get(), phNode);
+	SetNodeVisible( phNode, true );
 	m_data->GetRoot().AddChild( pNode );
 	if ( OrgTreeView * pView = GetView() ) {
 		pView->Invalidate();
@@ -436,6 +439,9 @@ void OrgTreeDoc::CreateDescendantNode( const POrgTreeDocNodeHandle & parent_ ) {
 			rect.OffsetRect( NODE_WIDTH + NODE_HSPACE, 0 );
 		}
 		SetNodeRect( *pNode, rect );
+		POrgTreeDocNodeHandle phNode;
+		GetNodeHandle( pNode.get(), phNode );
+		SetNodeVisible( phNode, true );
 		COrgCtrlDataItem * pParentImpl = NULL;
 		if ( FromNodeHandle( parent, pParentImpl ) ) {
 			pParentImpl->AddChild( pNode );
@@ -453,8 +459,8 @@ void OrgTreeDoc::CreateSiblingNode( void ) {
 		POrgTreeDocNodeHandle parent;
 		POrgTreeDocNodeHandle parent_of_parent;
 		if (
-			GetParentNode( sibling, parent ) &&
-			GetParentNode( parent, parent_of_parent ) // shouldn't create second root node
+			GetNodeParent( sibling, parent ) &&
+			GetNodeParent( parent, parent_of_parent ) // shouldn't create second root node
 		) {
 			CreateDescendantNode( parent );
 		}
@@ -464,6 +470,19 @@ void OrgTreeDoc::CreateSiblingNode( void ) {
 void OrgTreeDoc::DeleteNode() {
 	POrgTreeDocNodeHandle node;
 	if ( GetFocusedNode( node ) ) {
+
+		// removing invisible parent instead of visible branch node
+		// should not remove the main root node though (the node without parent)
+		POrgTreeDocNodeHandle parent;
+		POrgTreeDocNodeHandle parent_of_parent;
+		if ( 
+			GetNodeParent( node, parent ) &&
+			!IsNodeVisible( parent ) &&
+			GetNodeParent( parent, parent_of_parent )
+		) {
+			node = parent;
+		}
+
 		DeleteNode( node );
 		if ( OrgTreeView * pView = GetView() ) {
 			pView->Invalidate();
